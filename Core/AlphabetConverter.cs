@@ -1,8 +1,8 @@
 ﻿namespace Core
 {
-    public class AlphabetConverter
+    public static class AlphabetConverter
     {
-        private static readonly char[] alphabet =
+        public static readonly char[] Alphabet =
         [
             'А', 'Б', 'В', 'Г', 'Д',
             'Е', 'Ж', 'З', 'И', 'Й',
@@ -18,10 +18,10 @@
 
         static AlphabetConverter()
         {
-            for (int i = 0; i < alphabet.Length; i++)
+            for (int i = 0; i < Alphabet.Length; i++)
             {
-                charToNumber[alphabet[i]] = i + 1;
-                numberToChar[i + 1] = alphabet[i];
+                charToNumber[Alphabet[i]] = i + 1;
+                numberToChar[i + 1] = Alphabet[i];
             }
         }
 
@@ -34,6 +34,18 @@
         public static char ConvertNumberToChar(int number)
         {
             return numberToChar.TryGetValue(number, out char c) ? c : '\0'; // Возвращаем '\0', если число не найдено
+        }
+
+        public static char SumSym(char c1, char c2)
+        {
+            int sum = ConvertCharToNumber(c1) + ConvertCharToNumber(c2);
+            return ConvertNumberToChar(sum % Alphabet.Length);
+        }
+
+        public static char SubSym(char c1, char c2)
+        {
+            int sub = ConvertCharToNumber(c1) - ConvertCharToNumber(c2);
+            return ConvertNumberToChar((sub + Alphabet.Length) % Alphabet.Length);
         }
     }
 }
