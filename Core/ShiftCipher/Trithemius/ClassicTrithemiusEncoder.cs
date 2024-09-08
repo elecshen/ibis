@@ -6,8 +6,8 @@ namespace Core.ShiftCipher.Trithemius
     {
         protected readonly IAlphabet _alphabet;
 
-        public readonly int EncodingShift;
-        public readonly int DecodingShift;
+        protected readonly int EncodingShift;
+        protected readonly int DecodingShift;
 
         public ClassicTrithemiusEncoder(IAlphabet alphabet)
         {
@@ -16,34 +16,34 @@ namespace Core.ShiftCipher.Trithemius
             DecodingShift = _alphabet.Length - 8;
         }
 
-        protected CircularList<char> GetShiftTable(string key)
+        public CircularList<char> GetKeyTable(string key)
         {
-            var shiftTable = new CircularList<char>();
+            var keyTable = new CircularList<char>();
             foreach (char letter in key.ToCharArray())
             {
-                if (!shiftTable.Contains(letter))
+                if (!keyTable.Contains(letter))
                 {
-                    shiftTable.Add(letter);
+                    keyTable.Add(letter);
                 }
             }
-            var exp = _alphabet.Except(shiftTable);
-            shiftTable.AddRange(exp);
-            return shiftTable;
+            var exp = _alphabet.Except(keyTable);
+            keyTable.AddRange(exp);
+            return keyTable;
         }
 
         protected string Encode(string value, string key, int shift)
         {
             string output = "";
-            var shiftTable = GetShiftTable(key);
+            var keyTable = GetKeyTable(key);
             foreach (var letter in value)
             {
-                output += shiftTable[shiftTable.IndexOf(letter) + shift];
+                output += keyTable[keyTable.IndexOf(letter) + shift];
             }
             return output;
         }
 
-        public string Encrypt(string value, string key) => Encode(value.ToUpper(), key.ToUpper(), EncodingShift);
+        public string Encrypt(string value, string key, int idleShift = 0) => Encode(value.ToUpper(), key.ToUpper(), EncodingShift);
 
-        public string Decrypt(string value, string key) => Encode(value.ToUpper(), key.ToUpper(), DecodingShift);
+        public string Decrypt(string value, string key, int idleShift = 0) => Encode(value.ToUpper(), key.ToUpper(), DecodingShift);
     }
 }

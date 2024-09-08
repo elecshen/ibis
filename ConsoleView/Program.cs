@@ -7,10 +7,10 @@ namespace ConsoleView
     {
         static void Main(string[] args)
         {
-            ClassicTrithemiusEncoder encoder = new(new Alphabet());
-            var alf = encoder.Encrypt("Головной офис", "АБВгд");
+            PolyTrithemiusEncoder encoder = new(new Alphabet());
+            var alf = encoder.Encrypt("открытый_текст", "Аббат_тритимус", 0);
             Console.WriteLine(alf);
-            alf = encoder.Decrypt(alf, "АБВгд");
+            alf = encoder.Decrypt(alf, "Аббат_тритимус", 0);
             Console.WriteLine(alf);
         }
     }

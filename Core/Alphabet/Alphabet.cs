@@ -10,7 +10,7 @@
             'П', 'Р', 'С', 'Т', 'У',
             'Ф', 'Х', 'Ц', 'Ч', 'Ш',
             'Щ', 'Ы', 'Ь', 'Э', 'Ю',
-            'Я', ' '
+            'Я', '_'
         ];
 
         private static readonly Dictionary<char, int> charToNumber = [];
