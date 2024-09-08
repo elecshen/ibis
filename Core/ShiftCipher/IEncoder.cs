@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Core.ShiftCipher
 {
     public interface IEncoder
     {
