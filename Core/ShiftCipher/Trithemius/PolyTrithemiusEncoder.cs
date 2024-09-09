@@ -28,7 +28,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="value">Значение, которое будет зашифровано</param>
         /// <param name="key">Секрет используемы при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
-        /// <returns>Зашиврованная строка</returns>
+        /// <returns>Зашифрованная строка</returns>
         public new string Encrypt(string value, string key, int idleShift = 0) => Encode(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
 
         /// <summary>

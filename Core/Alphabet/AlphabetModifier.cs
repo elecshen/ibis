@@ -37,5 +37,9 @@
             }
             return output;
         }
+
+        public int[] TextToNums(string s) => s.Select(c => _alphabet[c]).ToArray();
+
+        public string NumsToText(IEnumerable<int> nums) => string.Join("", nums.Select(c => _alphabet[c]));
     }
 }
