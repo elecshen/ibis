@@ -4,14 +4,14 @@ namespace Core.ShiftCipher.Trithemius
 {
     public class PolyTrithemiusEncoder(IAlphabet alphabet) : ClassicTrithemiusEncoder(alphabet)
     {
-        protected string Encode(string value, string key, int baseShift, int idleShift)
+        public string Encode(string value, string key, int baseShift, int idleShift)
         {
             string output = "";
             var keyTable = GetKeyTable(key);
-            // Холостой сдвиг (при срабатывании, зашифрованный текст не совпадает с примером)
+            // Холостой сдвиг
             for (int i = 0; i < idleShift; i++)
                 // Сдвигаем символ
-                keyTable.ReplaceLastElement(idleShift);
+                keyTable.ReplaceLastElement(i);
             for (int i = 0; i < value.Length; i++)
             {
                 // Сдвигаем символ

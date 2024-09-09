@@ -4,11 +4,10 @@ namespace Core.ShiftCipher.Trithemius
 {
     public class SBlockModPolyTrithemiusEncoder(IAlphabet alphabet) : PolyTrithemiusEncoder(alphabet)
     {
-        // Результат преобразования не совпадает с примерами
-        public string ImproveBlock(string value, string key, int idleShift)
+        public string ImproveBlock(string value, string key, int idleShift, bool isEncode)
         {
             // Сдвигаем ключ на холостой сдвиг
-            idleShift = idleShift % value.Length;
+            idleShift = idleShift % key.Length;
             key += key[..idleShift];
             key = key.Substring(idleShift, value.Length);
 
@@ -16,8 +15,13 @@ namespace Core.ShiftCipher.Trithemius
             var keyNums = modifier.TextToNums(key);
             var blockNums = modifier.TextToNums(value);
             var q = keyNums.Sum() % value.Length;
-            for (int i = 0; i < value.Length - 1; i++)
-                blockNums[(q + i) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] + blockNums[(q + i) % value.Length]);
+            // Перемешиваем символы
+            if (isEncode)
+                for (int i = 0; i < value.Length - 1; i++)
+                    blockNums[(q + i + 1) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] + blockNums[(q + i) % value.Length]);
+            else
+                for (int i = value.Length - 2; i >= 0; i--)
+                    blockNums[(q + i + 1) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] - blockNums[(q + i) % value.Length]);
             return modifier.NumsToText(blockNums);
         }
 
@@ -34,7 +38,7 @@ namespace Core.ShiftCipher.Trithemius
                 return "input_error";
             key = key.ToUpper();
             string output = Encode(value.ToUpper(), key, EncodingShift, idleShift);
-            output = ImproveBlock(output, key, idleShift);
+            output = ImproveBlock(output, key, idleShift, true);
             return output; 
         }
 
@@ -50,8 +54,8 @@ namespace Core.ShiftCipher.Trithemius
             if (value.Length != 4)
                 return "input_error";
             key = key.ToUpper();
-            string output = Encode(value.ToUpper(), key, DecodingShift, idleShift);
-            output = ImproveBlock(output, key, idleShift);
+            string output = ImproveBlock(value.ToUpper(), key, idleShift, false);
+            output = Encode(output, key, DecodingShift, idleShift);
             return output;
         }
     }
