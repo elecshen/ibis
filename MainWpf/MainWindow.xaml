@@ -5,8 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MainWpf"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Lab1_IBIS" Height="450" Width="800">
+        Title="Lab1_IBIS" Height="400" Width="900">
     <Window.Background>
         <VisualBrush>
             <VisualBrush.Visual>
@@ -19,9 +20,12 @@
             </VisualBrush.Visual>
         </VisualBrush>
     </Window.Background>
+    <Window.DataContext>
+        <local:ViewModel/>
+    </Window.DataContext>
+
     <Grid>
-        
-        
+              
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
@@ -41,34 +45,35 @@
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,30,0,0" >
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Text="Ключ:" Foreground="White" FontWeight="Bold"/>
-                <TextBlock Name="Key" Width="100" TextAlignment="Left" />
+                <TextBox Name="Key" Width="100" TextAlignment="Left" Margin="10,0,0,0" Foreground="Black"  Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Text="Сдвиг:" Foreground="White" FontWeight="Bold"/>
-                <TextBlock Name="Shift" Width="100" TextAlignment="Left" Foreground="White" FontWeight="Bold"/>
+                <xctk:IntegerUpDown Name="Shift" Width="100" HorizontalAlignment="Left" Foreground="Black" FontWeight="Bold" Margin="10,0,0,0" 
+                   Value="{Binding Shift, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,30,0,0">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="10" Text="Введите текст:" FontSize="14" Foreground="White" FontWeight="Bold"/>
-                <TextBox Margin="10" TextWrapping="Wrap" Width="137" FontSize="14" Foreground="White" FontWeight="Bold"/>
-                <!--<Button Margin="10" Content="Кодировать" Click="Button_Click" FontSize="10" Foreground="White" FontWeight="Bold"/>-->
+                <TextBox Margin="10" TextWrapping="Wrap" Width="137" FontSize="14" Foreground="BLACK" FontWeight="Bold" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Margin="10" Content="Кодировать" Command ="{Binding EncodeCommand}" FontSize="14" Foreground="Black" FontWeight="Bold"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="10" Text="Результат:" FontSize="14" Foreground="White" FontWeight="Bold"/>
-                <!--<TextBlock Margin="10" x:Name="ResultTextCoding" Text="шифр" FontSize="10" Foreground="White" FontWeight="Bold"/>-->
+                <TextBlock Margin="10" x:Name="ResultTextCoding" FontSize="14" Foreground="White" FontWeight="Bold" Text="{Binding EncryptedResult, FallbackValue='шифр'}"/>
             </StackPanel>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20,30,0,0" >
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="10" Text="Введите текст:" FontSize="14" Foreground="White" FontWeight="Bold"/>
-                <TextBox Margin="10" TextWrapping="Wrap" Width="137" FontSize="10" />
-                <!--<Button Margin="10" Content="Декодировать" Click="Button_Click" FontSize="10" />-->
+                <TextBox Margin="10" TextWrapping="Wrap" Width="137" FontSize="14" Foreground="BLACK" FontWeight="Bold" Text="{Binding Input2Text, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Margin="10" Content="Декодировать" Command ="{Binding DecodeCommand}" FontSize="14" FontWeight="Bold"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="10" Text="Результат:" FontSize="14" Foreground="White" FontWeight="Bold"/>
-                <!--<TextBlock Margin="10" x:Name="ResultTextDecoding" Text="начальная строка" FontSize="10" />-->
+                <TextBlock Margin="10" x:Name="ResultTextDecoding" FontSize="14" Foreground="White" FontWeight="Bold" Text="{Binding DecryptedResult, FallbackValue='начальная строка'}"/>
             </StackPanel>
 
         </StackPanel>
