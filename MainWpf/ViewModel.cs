@@ -1,12 +1,8 @@
 ﻿using Core.Alphabet;
-using Core.ShiftCipher;
 using Core.ShiftCipher.Trithemius;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using static MainWpf.MainWindow;
 
@@ -15,159 +11,122 @@ namespace MainWpf
 {
     public class ViewModel:INotifyPropertyChanged
     {
-
         //переменные кодирования
-        private string _inputText;
-        private string _outputText;
+        private string encodeInputText;
+        private string encodeOutputText;
 
         //переменные декодирования
-        private string _input2Text;
-        private string _output2Text;
+        private string decodeInputText;
+        private string decodeOutputText;
 
         //переменные настройки
-        public string _key;
-        public int _shift;
+        private string key;
+        private int shift;
 
+        private readonly SBlockModPolyTrithemiusEncoder encoder;
 
-
-        private SBlockModPolyTrithemiusEncoder encoder = new(new Alphabet());
-
-
-       public event PropertyChangedEventHandler? PropertyChanged;
-
-        public string InputText
+        public ViewModel()
         {
-            get => _inputText;
+            encodeInputText = "";
+            encodeOutputText = "";
+            decodeInputText = "";
+            decodeOutputText = "";
+            key = "";
+            shift = 0;
+            encoder = new(new Alphabet());
+        }
+
+        public string EncodeInputText
+        {
+            get => encodeInputText;
             set
             {
-                if (_inputText != value)
-                {
-                    _inputText = value;
-                    OnPropertyChanged(nameof(InputText));
-                }
+                encodeInputText = value;
+                OnPropertyChanged();
             }
         }
 
-        public string EncryptedResult
+        public string EncodeOutputText
         {
-            get => _outputText;
+            get => encodeOutputText;
             private set
             {
-                _outputText = value;
-                OnPropertyChanged(nameof(EncryptedResult));
+                encodeOutputText = value;
+                OnPropertyChanged();
             }
         }
 
-
-        public string Input2Text
+        public string DecodeInputText
         {
-            get => _input2Text;
+            get => decodeInputText;
             set
             {
-                if (_input2Text != value)
-                {
-                    _input2Text = value;
-                    OnPropertyChanged(nameof(Input2Text));
-                }
+                decodeInputText = value;
+                OnPropertyChanged();
             }
         }
 
-        public string DecryptedResult
+        public string DecodeOutputText
         {
-            get => _output2Text;
+            get => decodeOutputText;
             private set
             {
-                _output2Text = value;
-                OnPropertyChanged(nameof(DecryptedResult));
+                decodeOutputText = value;
+                OnPropertyChanged();
             }
         }
-
-
 
         public string Key
         {
-            get => _key;
+            get => key;
             set
             {
-                _key = value;
-                OnPropertyChanged(nameof(Key));
+                key = value;
+                OnPropertyChanged();
             }
         }
+
         public int Shift
         {
-            get => _shift;
+            get => shift;
             set
             {
-                {
-                    _shift = value;
-                    OnPropertyChanged(nameof(Key));
-                }
+                shift = value;
+                OnPropertyChanged();
             }
         }
 
-
-        public ICommand EncodeCommand => new RelayCommand(EncryptInput);
-
-        private void EncryptInput()
+        public ICommand EncodeCommand => new Command(obj =>
         {
-            if (!string.IsNullOrWhiteSpace(InputText))
-            {
-                string K = "ЧРОТ";
-                string I = "РОЗА";
-                int S = 0;
-
-                if (Key != null) {
-                    K = Key;
-                }
-
-                if (InputText != null)
-                {
-                    I = InputText;
-                }
-
-                if (Shift != null) 
-                {
-                    S = Shift;
-                }
-
-                var alf = encoder.Encrypt(I,K,S);
-                EncryptedResult = alf;
-            }
-        }
-        public ICommand DecodeCommand => new RelayCommand(DecryptInput);
-        private void DecryptInput()
+            if (string.IsNullOrWhiteSpace(Key))
+                EncodeOutputText = "Неверный ключ";
+            else
+                EncodeOutputText = encoder.Encrypt(EncodeInputText, Key, Shift);
+        });
+        public ICommand CopyEncodeOutputCommand => new Command(obj =>
         {
-            if (!string.IsNullOrWhiteSpace(Input2Text))
-            {
-                string K = "ЧРОТ";
-                string I = "РОЗА";
-                int S = 0;
+            if (!string.IsNullOrWhiteSpace(EncodeOutputText))
+                Clipboard.SetText(EncodeOutputText);
+        });
 
-                if (Key != null)
-                {
-                    K = Key;
-                }
-
-                if (Input2Text != null)
-                {
-                    I = Input2Text;
-                }
-
-                if (Shift != null)
-                {
-                    S = Shift;
-                }
-                
-
-                var alf = encoder.Decrypt(I, K, S);
-                DecryptedResult = alf;
-            }
-        }
-
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        public ICommand DecodeCommand => new Command(obj =>
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (string.IsNullOrWhiteSpace(Key))
+                DecodeOutputText = "Неверный ключ";
+            else
+                DecodeOutputText = encoder.Decrypt(DecodeInputText, Key, Shift);
+        });
+
+        public ICommand CopyDecodeOutputCommand => new Command(obj =>
+        {
+            if (!string.IsNullOrWhiteSpace(DecodeOutputText))
+                Clipboard.SetText(DecodeOutputText);
+        });
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
     }
 }
