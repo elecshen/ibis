@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainWpf", "MainWpf\MainWpf.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{5CE1282C-FCED-4382-BB15-78C64589E24A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleView", "ConsoleView\ConsoleView.csproj", "{4544C6DA-8A7F-455D-9264-2038E4D2B232}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleView", "ConsoleView\ConsoleView.csproj", "{4544C6DA-8A7F-455D-9264-2038E4D2B232}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
