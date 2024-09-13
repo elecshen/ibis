@@ -23,7 +23,7 @@ namespace MainWpf
         private string key;
         private int shift;
 
-        private readonly SBlockModPolyTrithemiusEncoder encoder;
+        private readonly SBlockModPolyTrithemiusEncoder<Alphabet> encoder;
 
         public ViewModel()
         {
@@ -33,7 +33,8 @@ namespace MainWpf
             decodeOutputText = "";
             key = "";
             shift = 0;
-            encoder = new(new Alphabet());
+            var a = new Alphabet();
+            encoder = new(a, new AlphabetModifier<Alphabet>(a));
         }
 
         public string EncodeInputText

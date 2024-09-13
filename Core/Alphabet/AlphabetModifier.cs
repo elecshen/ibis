@@ -1,6 +1,6 @@
 ﻿namespace Core.Alphabet
 {
-    public class AlphabetModifier(IAlphabet alphabet)
+    public class AlphabetModifier<T>(T alphabet) : IAlphabetModifier<T> where T : IAlphabet
     {
         private readonly IAlphabet _alphabet = alphabet;
 

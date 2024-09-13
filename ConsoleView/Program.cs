@@ -7,7 +7,8 @@ namespace ConsoleView
     {
         static void Main(string[] args)
         {
-            SBlockModPolyTrithemiusEncoder encoder = new(new Alphabet());
+            var a = new Alphabet();
+            var encoder = new SBlockModPolyTrithemiusEncoder<Alphabet>(a, new AlphabetModifier<Alphabet>(a));
             var alf = encoder.Encrypt("ЧРОТ", "РОЗА", 0);
             Console.WriteLine(alf);
             alf = encoder.Decrypt(alf, "РОЗА", 0);

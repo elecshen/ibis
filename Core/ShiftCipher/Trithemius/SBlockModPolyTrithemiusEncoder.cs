@@ -2,18 +2,21 @@
 
 namespace Core.ShiftCipher.Trithemius
 {
-    public class SBlockModPolyTrithemiusEncoder(IAlphabet alphabet) : PolyTrithemiusEncoder(alphabet)
+    public class SBlockModPolyTrithemiusEncoder<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncoder(alphabet) where T : IAlphabet
     {
+        private readonly IAlphabetModifier<T> _modifier = alphabetModifier;
+
         public string ImproveBlock(string value, string key, int idleShift, bool isEncode)
         {
             // Сдвигаем ключ на холостой сдвиг
+            while (key.Length < value.Length)
+                key += key;
             idleShift = idleShift % key.Length;
             key += key[..idleShift];
             key = key.Substring(idleShift, value.Length);
 
-            AlphabetModifier modifier = new(_alphabet);
-            var keyNums = modifier.TextToNums(key);
-            var blockNums = modifier.TextToNums(value);
+            var keyNums = _modifier.TextToNums(key);
+            var blockNums = _modifier.TextToNums(value);
             var q = keyNums.Sum() % value.Length;
             // Перемешиваем символы
             if (isEncode)
@@ -22,7 +25,7 @@ namespace Core.ShiftCipher.Trithemius
             else
                 for (int i = value.Length - 2; i >= 0; i--)
                     blockNums[(q + i + 1) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] - blockNums[(q + i) % value.Length]);
-            return modifier.NumsToText(blockNums);
+            return _modifier.NumsToText(blockNums);
         }
 
         /// <summary>
