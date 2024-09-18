@@ -20,7 +20,8 @@
         static Alphabet()
         {
             for (int i = 0; i < alphabet.Length; i++)
-                charToNumber[alphabet[i]] = i;
+                charToNumber[alphabet[i]] = i + 1;
+            charToNumber[alphabet[^1]] = 0;
         }
 
         public int NormalizeIndex(int index) => index < 0 ? index % alphabet.Length + alphabet.Length : (index + alphabet.Length) % alphabet.Length;
@@ -32,7 +33,7 @@
 
         public char this[int index]
         {
-            get => alphabet[NormalizeIndex(index)];
+            get => alphabet[NormalizeIndex(index - 1)];
         }
 
         public IEnumerable<char> Except(IEnumerable<char> second) => alphabet.Except(second);
