@@ -9,7 +9,7 @@ namespace Core.ShiftCipher.Trithemius
             string output = "";
             var keyTable = GetKeyTable(key);
             // Холостой сдвиг
-            for (int i = 0; i < idleShift; i++)
+            for (int i = 1; i < idleShift; i++)
                 // Сдвигаем символ
                 keyTable.ReplaceLastElement(i);
             for (int i = 0; i < value.Length; i++)
