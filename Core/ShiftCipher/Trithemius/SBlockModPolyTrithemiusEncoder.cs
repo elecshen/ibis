@@ -4,9 +4,16 @@ namespace Core.ShiftCipher.Trithemius
 {
     public class SBlockModPolyTrithemiusEncoder<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncoder(alphabet) where T : IAlphabet
     {
-        private readonly IAlphabetModifier<T> _modifier = alphabetModifier;
+        protected readonly IAlphabetModifier<T> _modifier = alphabetModifier;
 
-        public string ImproveBlock(string value, string key, int idleShift, bool isEncode)
+        protected string? Check4Sym(string value)
+        {
+            if (value.Length != 4)
+                return "input_error";
+            return null;
+        }
+
+        protected string ImproveBlock(string value, string key, int idleShift, bool isEncode)
         {
             // Сдвигаем ключ на холостой сдвиг
             while (key.Length < value.Length)
@@ -21,10 +28,10 @@ namespace Core.ShiftCipher.Trithemius
             // Перемешиваем символы
             if (isEncode)
                 for (int i = 0; i < value.Length - 1; i++)
-                    blockNums[(q + i + 1) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] + blockNums[(q + i) % value.Length]);
+                    blockNums[(q + i + 1) % value.Length] = Utils.NormalizeIndex(blockNums[(q + i + 1) % value.Length] + blockNums[(q + i) % value.Length], _alphabet.Length);
             else
                 for (int i = value.Length - 2; i >= 0; i--)
-                    blockNums[(q + i + 1) % value.Length] = _alphabet.NormalizeIndex(blockNums[(q + i + 1) % value.Length] - blockNums[(q + i) % value.Length]);
+                    blockNums[(q + i + 1) % value.Length] = Utils.NormalizeIndex(blockNums[(q + i + 1) % value.Length] - blockNums[(q + i) % value.Length], _alphabet.Length);
             return _modifier.NumsToText(blockNums);
         }
 
@@ -32,15 +39,16 @@ namespace Core.ShiftCipher.Trithemius
         /// Функция усиленного блочного полиалфавитного шифра Тритемиуса.
         /// </summary>
         /// <param name="value">Значение, которое будет зашифровано</param>
-        /// <param name="key">Секрет используемы при шифровании</param>
+        /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Зашифрованная строка</returns>
         public new string Encrypt(string value, string key, int idleShift = 0)
         {
-            if (value.Length != 4)
-                return "input_error";
+            var res = Check4Sym(value);
+            if (res is not null) return res;
+
             key = key.ToUpper();
-            string output = Encode(value.ToUpper(), key, EncodingShift, idleShift);
+            string output = EncryptText(value.ToUpper(), key, EncodingShift, idleShift);
             output = ImproveBlock(output, key, idleShift, true);
             return output; 
         }
@@ -48,17 +56,18 @@ namespace Core.ShiftCipher.Trithemius
         /// <summary>
         /// Функция усиленного блочного полиалфавитного шифра Тритемиуса.
         /// </summary>
-        /// <param name="value">Значение, которое будет разшифровано</param>
-        /// <param name="key">Секрет используемы при шифровании</param>
+        /// <param name="value">Значение, которое будет расшифровано</param>
+        /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
         public new string Decrypt(string value, string key, int idleShift = 0)
         {
-            if (value.Length != 4)
-                return "input_error";
+            var res = Check4Sym(value);
+            if (res is not null) return res;
+
             key = key.ToUpper();
             string output = ImproveBlock(value.ToUpper(), key, idleShift, false);
-            output = Encode(output, key, DecodingShift, idleShift);
+            output = EncryptText(output, key, DecodingShift, idleShift);
             return output;
         }
     }

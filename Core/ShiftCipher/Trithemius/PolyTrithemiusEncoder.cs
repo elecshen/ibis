@@ -1,23 +1,25 @@
 ﻿using Core.Alphabet;
+using System.Diagnostics.Metrics;
 
 namespace Core.ShiftCipher.Trithemius
 {
     public class PolyTrithemiusEncoder(IAlphabet alphabet) : ClassicTrithemiusEncoder(alphabet)
     {
-        public string Encode(string value, string key, int baseShift, int idleShift)
+        protected void MakeIdleShift(ref CircularList<char> keyTable, int idleShift)
+        {
+            for (int i = 1; i < idleShift; i++)
+                keyTable.ShiftElement(i, _alphabet.Length - 1);
+        }
+
+        public string EncryptText(string value, string key, int tableShift, int idleShift)
         {
             string output = "";
             var keyTable = GetKeyTable(key);
-            // Холостой сдвиг
-            for (int i = 1; i < idleShift; i++)
-                // Сдвигаем символ
-                keyTable.ReplaceLastElement(i);
+            MakeIdleShift(ref keyTable, idleShift);
             for (int i = 0; i < value.Length; i++)
             {
-                // Сдвигаем символ
-                keyTable.ReplaceLastElement(idleShift + i);
-                // Добавляем символ, находяйся на 8 впереди (при кодировании) или позади (при расшифровке)
-                output += keyTable[keyTable.IndexOf(value[i]) + baseShift];
+                keyTable.ShiftElement(idleShift + i, _alphabet.Length - 1);
+                output += EncryptSym(value[i], keyTable, tableShift);
             }
             return output;
         }
@@ -26,18 +28,18 @@ namespace Core.ShiftCipher.Trithemius
         /// Функция полиалфавитного шифра Тритемиуса.
         /// </summary>
         /// <param name="value">Значение, которое будет зашифровано</param>
-        /// <param name="key">Секрет используемы при шифровании</param>
+        /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Зашифрованная строка</returns>
-        public new string Encrypt(string value, string key, int idleShift = 0) => Encode(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
+        public new string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
 
         /// <summary>
         /// Функция полиалфавитного шифра Тритемиуса.
         /// </summary>
-        /// <param name="value">Значение, которое будет разшифровано</param>
-        /// <param name="key">Секрет используемы при шифровании</param>
+        /// <param name="value">Значение, которое будет расшифровано</param>
+        /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public new string Decrypt(string value, string key, int idleShift = 0) => Encode(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
+        public new string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
     }
 }
