@@ -42,7 +42,7 @@
 
         public string NumsToText(IEnumerable<int> nums) => string.Join("", nums.Select(c => _alphabet[c]));
 
-        public int TextToBaseNum(string value, int baseNum = -1)
+        public long TextToBaseNum(string value, int baseNum = -1)
         {
             if(baseNum == -1) 
                 baseNum = _alphabet.Length;
@@ -53,7 +53,7 @@
                 res += pos * _alphabet[ch];
                 pos *= baseNum;
             }
-            return (int)res;
+            return res;
         }
 
         public string BaseNumToText(long num, int baseNum = -1)

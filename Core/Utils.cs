@@ -53,7 +53,7 @@ namespace Core
         public static int[] Make3Seeds<T>(string value, IExtendedEncoder encoder, IAlphabetModifier<T> modifier) where T : IAlphabet
         {
             string[] keys = ["ПЕРВЫЙ_ГЕНЕРАТОР", "ВТОРОЙ_ГЕНЕРАТОР", "ТРЕТИЙ_ГЕНЕРАТОР"];
-            return keys.Select(k => modifier.TextToBaseNum(Oneside(value, k, 10, encoder))).ToArray();
+            return keys.Select(k => (int)modifier.TextToBaseNum(Oneside(value, k, 10, encoder))).ToArray();
         }
 
         public static string CheckSeed<T>(string value, IExtendedEncoder encoder, IAlphabetModifier<T> modifier) where T : IAlphabet
