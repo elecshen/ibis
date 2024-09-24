@@ -55,5 +55,18 @@ namespace Core
             string[] keys = ["ПЕРВЫЙ_ГЕНЕРАТОР", "ВТОРОЙ_ГЕНЕРАТОР", "ТРЕТИЙ_ГЕНЕРАТОР"];
             return keys.Select(k => modifier.TextToBaseNum(Oneside(value, k, 10, encoder))).ToArray();
         }
+
+        public static string CheckSeed<T>(string value, IExtendedEncoder encoder, IAlphabetModifier<T> modifier) where T : IAlphabet
+        {
+            string key = "ОТВЕТСТВЕННЫЙ_ПОДХОД";
+            var blocks = new string[4];
+            for (int i = 0; i < 4; i++)
+                blocks[i] = value.Substring(i * 4, 4);
+            for (int j = 0; j < 4; j++)
+                for (int i = j + 1; i < 4; i++)
+                    if (blocks[i] == blocks[j])
+                        blocks[i] = Oneside(blocks[j], key, j + 2 * i, encoder);
+            return string.Join("", blocks);
+        }
     }
 }

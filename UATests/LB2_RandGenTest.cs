@@ -37,6 +37,7 @@ namespace UATests
         }
 
         [TestCase(34916, "АБВГ")]
+        [TestCase(32028, "_ЯЗЬ")]
         public void PermutationBaseNumToText(int num, string expected)
         {
             var result = _alphabetModifier.BaseNumToText(num, _alphabet.Length);
@@ -78,7 +79,9 @@ namespace UATests
         [TestCase(1231, 723482, 0, 1231)]
         [TestCase(1231, 723482, 20, 723482)]
         [TestCase(1231, 723482, 10, 1562)]
+        [TestCase(1231, 723482, 11, 1050)]
         [TestCase(723482, 1231, 10, 723151)]
+        [TestCase(723482, 1231, 11, 723663)]
         public void ComposeNums(int num1, int num2, int threshold, int expected)
         {
             var result = Utils.ComposeNums(num1, num2, threshold);
@@ -107,22 +110,28 @@ namespace UATests
         }
 
         [TestCase("КОЛА", new int[] { 964101, 765457, 387227 })]
+        [TestCase("ПНЛА", new int[] { 761685, 375102, 51081 })]
+        [TestCase("АБВГ", new int[] { 382497, 225721, 252520 })]
         public void Make3Seeds(string value, int[] expected)
         {
             var result = Utils.Make3Seeds(value, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [TestCase("ВЭЕЭ", 1)]
-        [TestCase("СЬЭН", 2)]
-        [TestCase("ГДУЖ", 3)]
-        [TestCase("ЕАОЙ", 4)]
-        public void HCLCG_Next3(string expected, int steps)
+        [TestCase("КОЛА", "ВЭЕЭ", 1)]
+        [TestCase("КОЛА", "СЬЭН", 2)]
+        [TestCase("КОЛА", "ГДУЖ", 3)]
+        [TestCase("КОЛА", "ЕАОЙ", 4)]
+        [TestCase("АБВГ", "ГЯФК", 1)]
+        [TestCase("АБВГ", "ГЧХЖ", 2)]
+        [TestCase("АБВГ", "ВЫХД", 3)]
+        [TestCase("АБВГ", "_НЙЕ", 4)]
+        public void HCLCG_Next3(string seed, string expected, int steps)
         {
-            var seeds = Utils.Make3Seeds("КОЛА", _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
-            var lcg1 = new LCG((int)seeds[0], new(723482, 8677, 983609));
-            var lcg2 = new LCG((int)seeds[1], new(252564, 9109, 961193));
-            var lcg3 = new LCG((int)seeds[2], new(357630, 8971, 948209));
+            var seeds = Utils.Make3Seeds(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            var lcg1 = new LCG(seeds[0], new(723482, 8677, 983609));
+            var lcg2 = new LCG(seeds[1], new(252564, 9109, 961193));
+            var lcg3 = new LCG(seeds[2], new(357630, 8971, 948209));
             var hclcg = new HCLCG(lcg1, lcg2, lcg3);
             string result = "";
             for (int i = 0; i < steps; i++)
@@ -134,11 +143,41 @@ namespace UATests
         }
 
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ЬЕШЮШ_ЗЯЧЖ_ВЖЙЕГ", 1)]
+        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ГУЬЙЭЬДЫЭУ_ЮХЛДТ", 2)]
+        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
         public void CHCLCG_Next(string seed, string expected, int steps)
         {
             var chclcg = new CHCLCG<RusAlphabet>(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
 
-            var result = chclcg.Next();
+            string result = "";
+            for (int i = 0; i < steps; i++)
+            {
+                result = chclcg.Next();
+            }
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("ААААААААББББББББ", "ААААЦДЫДББББЮДЗГ")]
+        [TestCase("ВВВВГГГГАААААААА", "ВВВВГГГГААААЮДЗГ")]
+        [TestCase("АААААААААААААААА", "ААААЦДЫДЖЫЗЦЫЦХД")]
+        public void CheckSeed(string seed, string expected)
+        {
+            var result = Utils.CheckSeed(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ЬЕШЮШ_ЗЯЧЖ_ВЖЙЕГ", 1)]
+        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ГУЬЙЭЬДЫЭУ_ЮХЛДТ", 2)]
+        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
+        public void CHCLCGM_Next(string seed, string expected, int steps)
+        {
+            var chclcgm = new CHCLCGM<RusAlphabet>(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
+
+            string result = "";
+            for (int i = 0; i < steps; i++)
+            {
+                result = chclcgm.Next();
+            }
             Assert.That(result, Is.EqualTo(expected));
         }
     }

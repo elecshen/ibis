@@ -17,17 +17,17 @@ namespace Core.RandomGenerator
             {
                 seeds = Utils.Make3Seeds(seed.Substring(4*i, 4), encoder, modifier);
                 _hCLCGs[i] = new(new(seeds[0], coeffs[0]), new(seeds[1], coeffs[1]), new(seeds[2], coeffs[2]));
-                //_hCLCGs[i] = new(new("", coeffs[0]), new(seeds[1], coeffs[1]), new(seeds[2], coeffs[2]));
             }
         }
 
         public string Next()
         {
             string res = "";
-            int sign = 1, tmp = 0;
-            for (int i = 0; i < 4; i++, sign *= -1)
+            for (int j = 0; j < 4; j++)
             {
-                tmp = (sign * _hCLCGs[i].Next() + 1048576 + tmp) % +1048576;
+                int sign = 1, tmp = 0;
+                for (int i = 0; i < 4; i++, sign *= -1)
+                    tmp = (sign * _hCLCGs[i].Next() + 1048576 + tmp) % +1048576;
                 res += _modifier.BaseNumToText(tmp);
             }
             return res;

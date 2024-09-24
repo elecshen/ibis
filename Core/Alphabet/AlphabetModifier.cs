@@ -61,7 +61,7 @@
             if (baseNum == -1) 
                 baseNum = _alphabet.Length;
             string res = "";
-            while (num > 0)
+            for (int i = 0; i < 4; i++)
             {
                 res = _alphabet[(int)num % baseNum] + res;
                 num /= baseNum;
