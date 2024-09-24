@@ -12,7 +12,7 @@ namespace Core.RandomGenerator
         public void Init(string seed, LCGCoeffs[] coeffs)
         {
             if (seed.Length != 16 || coeffs.Length != 3)
-                return;
+                throw new ArgumentException("invalid_input");
             int[] seeds;
             for (int i = 0; i < 4; i++)
             {
