@@ -58,7 +58,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Игнорируется</param>
         /// <returns>Зашифрованная строка</returns>
-        public string Encrypt(string value, string key, int idleShift = 0) => Encrypt(value.ToUpper(), key.ToUpper(), EncodingShift);
+        public virtual string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift);
 
         /// <summary>
         /// Функция простого шифра Тритемиуса. Значение idleShift игнорируется.
@@ -67,6 +67,6 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public string Decrypt(string value, string key, int idleShift = 0) => Encrypt(value.ToUpper(), key.ToUpper(), DecodingShift);
+        public virtual string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift);
     }
 }

@@ -42,7 +42,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Зашифрованная строка</returns>
-        public new string Encrypt(string value, string key, int idleShift = 0)
+        public override string Encrypt(string value, string key, int idleShift = 0)
         {
             var res = Check4Sym(value);
             if (res is not null) return res;
@@ -60,7 +60,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public new string Decrypt(string value, string key, int idleShift = 0)
+        public override string Decrypt(string value, string key, int idleShift = 0)
         {
             var res = Check4Sym(value);
             if (res is not null) return res;

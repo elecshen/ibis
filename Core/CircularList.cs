@@ -15,8 +15,9 @@
         public void ShiftElement(int to, int from)
         {
             to = Utils.NormalizeIndex(to - 1, Count);
-            Insert(to, base[from]);
+            var temp = base[from];
             RemoveAt(from);
+            Insert(to, temp);
         }
     }
 }
