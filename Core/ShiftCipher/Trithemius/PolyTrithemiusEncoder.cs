@@ -31,7 +31,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Зашифрованная строка</returns>
-        public new string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
+        public override string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
 
         /// <summary>
         /// Функция полиалфавитного шифра Тритемиуса.
@@ -40,6 +40,6 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public new string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
+        public override string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
     }
 }

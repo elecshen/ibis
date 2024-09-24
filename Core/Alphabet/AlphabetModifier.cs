@@ -41,5 +41,32 @@
         public int[] TextToNums(string s) => s.Select(c => _alphabet[c]).ToArray();
 
         public string NumsToText(IEnumerable<int> nums) => string.Join("", nums.Select(c => _alphabet[c]));
+
+        public int TextToBaseNum(string value, int baseNum = -1)
+        {
+            if(baseNum == -1) 
+                baseNum = _alphabet.Length;
+            long res = 0;
+            int pos = 1;
+            foreach (var ch in value.Reverse())
+            {
+                res += pos * _alphabet[ch];
+                pos *= baseNum;
+            }
+            return (int)res;
+        }
+
+        public string BaseNumToText(long num, int baseNum = -1)
+        {
+            if (baseNum == -1) 
+                baseNum = _alphabet.Length;
+            string res = "";
+            for (int i = 0; i < 4; i++)
+            {
+                res = _alphabet[(int)num % baseNum] + res;
+                num /= baseNum;
+            }
+            return res;
+        }
     }
 }

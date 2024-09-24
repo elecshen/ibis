@@ -1,4 +1,5 @@
 using Core.Alphabet;
+using System;
 using UATests.TestSuccessor;
 
 namespace UATests
@@ -50,6 +51,37 @@ namespace UATests
         public void PermutationNumToChar_Success(int num, char expected)
         {
             var result = _alphabet[num];
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("ÃÎËÎÂÍÎÉ_ÎÔÈÑ", "×ÅĞÍÎÑÎÒÅÍÖÛ", "ÌÃÜÃËÂÃØÖÃ_ÕÄ")]
+        [TestCase("ÃÎËÎÂÍÎÉ_ÎÔÈÑ", "ÀÁÂÃÄ", "ËÖÓÖÊÕÖÑÇÖİĞÙ")]
+        public void ClassicEncrypt(string value, string key, string expected)
+        {
+            var result = _classicTrithemiusEncoder.Encrypt(value, key, 0);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("ÃÎËÎÂÍÎÉ_ÎÔÈÑ", "×ÅĞÍÎÑÎÒÅÍÖÛ", "ÌÃÜÃËÂÃØÖÃ_ÕÄ")]
+        [TestCase("ÃÎËÎÂÍÎÉ_ÎÔÈÑ", "ÀÁÂÃÄ", "ËÖÓÖÊÕÖÑÇÖİĞÙ")]
+        public void shiftTable(string value, string key, string expected)
+        {
+            var result = _classicTrithemiusEncoder.Encrypt(value, key, 0);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("ÎÒÊĞÛÒÛÉ_ÒÅÊÑÒ", "ÀÁÁÀÒ_ÒĞÈÒÈÌÓÑ", 0, "ÛÃ×Å_ÃÌÖÄÃÏÜÊÃ")]
+        [TestCase("ÎÒÊĞÛÒÛÉ_ÒÅÊÑÒ", "ÀÁÁÀÒ_ÒĞÈÒÈÌÓÑ", 1, "ÛÃ×ÅÓÃÈÖÄÃÏÛÊÃ")]
+        public void PolyEncrypt(string value, string key, int idleShift, string expected)
+        {
+            var result = _polyTrithemiusEncoder.Encrypt(value, key, idleShift);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [TestCase("ÊĞÎÒ", "ĞÎÇÀ", 0, "İÅÌÇ")]
+        public void SBlockEncrypt(string value, string key, int idleShift, string expected)
+        {
+            var result = _sBlockModPolyTrithemiusEncoder.Encrypt(value, key, idleShift);
             Assert.That(result, Is.EqualTo(expected));
         }
     }
