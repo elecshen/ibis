@@ -30,5 +30,7 @@
         /// <param name="second">Перечисление символов, которые будут исключены из результата</param>
         /// <returns></returns>
         public IEnumerable<char> Except(IEnumerable<char> second);
+
+        public bool IsValidString(string str);
     }
 }

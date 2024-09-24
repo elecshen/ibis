@@ -32,7 +32,7 @@ namespace UATests
         [TestCase("КЯВБ", 392290)]
         public void PermutationTextToBaseNum(string value, int expected)
         {
-            var result = _alphabetModifier.TextToBaseNum(value, _alphabet.Length);
+            var result = _alphabetModifier.TextToBaseNum(value);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -40,7 +40,7 @@ namespace UATests
         [TestCase(32028, "_ЯЗЬ")]
         public void PermutationBaseNumToText(int num, string expected)
         {
-            var result = _alphabetModifier.BaseNumToText(num, _alphabet.Length);
+            var result = _alphabetModifier.BaseNumToText(num);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -103,7 +103,7 @@ namespace UATests
             string result = "";
             for (int i = 0; i < steps; i++)
             {
-                result = _alphabetModifier.BaseNumToText(hclcg.Next(), _alphabet.Length);
+                result = _alphabetModifier.BaseNumToText(hclcg.Next());
             }
 
             Assert.That(result, Is.EqualTo(expected));
@@ -136,7 +136,7 @@ namespace UATests
             string result = "";
             for (int i = 0; i < steps; i++)
             {
-                result = _alphabetModifier.BaseNumToText(hclcg.Next(), _alphabet.Length);
+                result = _alphabetModifier.BaseNumToText(hclcg.Next());
             }
 
             Assert.That(result, Is.EqualTo(expected));
@@ -147,7 +147,8 @@ namespace UATests
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
         public void CHCLCG_Next(string seed, string expected, int steps)
         {
-            var chclcg = new CHCLCG<RusAlphabet>(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
+            var chclcg = new CHCLCG<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            chclcg.Init(seed, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
 
             string result = "";
             for (int i = 0; i < steps; i++)
@@ -171,7 +172,8 @@ namespace UATests
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
         public void CHCLCGM_Next(string seed, string expected, int steps)
         {
-            var chclcgm = new CHCLCGM<RusAlphabet>(seed, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
+            var chclcgm = new CHCLCGM<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            chclcgm.Init(seed, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
 
             string result = "";
             for (int i = 0; i < steps; i++)

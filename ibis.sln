@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainWpf", "MainWpf\MainWpf.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{5CE1282C-FCED-4382-BB15-78C64589E24A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleView", "ConsoleView\ConsoleView.csproj", "{4544C6DA-8A7F-455D-9264-2038E4D2B232}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UATests", "UATests\UATests.csproj", "{02CFE4E2-891B-4671-9EF4-A26C61FACDD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UATests", "UATests\UATests.csproj", "{02CFE4E2-891B-4671-9EF4-A26C61FACDD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{5CE1282C-FCED-4382-BB15-78C64589E24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CE1282C-FCED-4382-BB15-78C64589E24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CE1282C-FCED-4382-BB15-78C64589E24A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4544C6DA-8A7F-455D-9264-2038E4D2B232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4544C6DA-8A7F-455D-9264-2038E4D2B232}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4544C6DA-8A7F-455D-9264-2038E4D2B232}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4544C6DA-8A7F-455D-9264-2038E4D2B232}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02CFE4E2-891B-4671-9EF4-A26C61FACDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{02CFE4E2-891B-4671-9EF4-A26C61FACDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02CFE4E2-891B-4671-9EF4-A26C61FACDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU

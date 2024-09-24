@@ -3,19 +3,20 @@ using Core.ShiftCipher;
 
 namespace Core.RandomGenerator
 {
-    public class CHCLCG<T> where T : IAlphabet
+    public class CHCLCG<T>(IExtendedEncoder encoder, IAlphabetModifier<T> modifier) where T : IAlphabet
     {
-        protected HCLCG[] _hCLCGs;
-        protected IAlphabetModifier<T> _modifier;
+        protected HCLCG[] _hCLCGs = new HCLCG[4];
+        protected IAlphabetModifier<T> _modifier = modifier;
+        protected IExtendedEncoder _encoder = encoder;
 
-        public CHCLCG(string seed, IExtendedEncoder encoder, IAlphabetModifier<T> modifier, LCGCoeffs[] coeffs)
+        public void Init(string seed, LCGCoeffs[] coeffs)
         {
-            _hCLCGs = new HCLCG[4];
-            _modifier = modifier;
+            if (seed.Length != 16 || coeffs.Length != 3)
+                return;
             int[] seeds;
             for (int i = 0; i < 4; i++)
             {
-                seeds = Utils.Make3Seeds(seed.Substring(4*i, 4), encoder, modifier);
+                seeds = Utils.Make3Seeds(seed.Substring(4 * i, 4), _encoder, _modifier);
                 _hCLCGs[i] = new(new(seeds[0], coeffs[0]), new(seeds[1], coeffs[1]), new(seeds[2], coeffs[2]));
             }
         }

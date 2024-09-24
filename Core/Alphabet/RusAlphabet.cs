@@ -35,5 +35,7 @@
         }
 
         public IEnumerable<char> Except(IEnumerable<char> second) => alphabet.Except(second);
+
+        public bool IsValidString(string str) => str.ToUpper().All((ch) => alphabet.Contains(ch));
     }
 }
