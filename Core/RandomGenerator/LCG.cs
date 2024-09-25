@@ -5,6 +5,8 @@
         public readonly int A = a;
         public readonly int C = c;
         public readonly int M = m;
+
+        public static readonly LCGCoeffs[] DefaultCoeffs = [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)];
     }
 
     public class LCG(int seed, LCGCoeffs coeffs) : IRandGenerator

@@ -2,7 +2,6 @@
 using Core.Alphabet;
 using Core.RandomGenerator;
 using Core.ShiftCipher.Trithemius;
-using Newtonsoft.Json.Linq;
 using UATests.TestSuccessor;
 
 namespace UATests

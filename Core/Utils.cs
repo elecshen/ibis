@@ -68,5 +68,24 @@ namespace Core
                         blocks[i] = Oneside(blocks[j], key, j + 2 * i, encoder);
             return string.Join("", blocks);
         }
+
+        public static string XorBlockMini<T>(string str1, string str2, IAlphabetModifier<T> modifier) where T : IAlphabet
+        {
+            var nums1 = modifier.TextToNums(str1);
+            var nums2 = modifier.TextToNums(str2);
+            for (int i = 0; i < nums1.Length; i++)
+                nums1[i] = nums1[i] ^ nums2[i];
+            return modifier.NumsToText(nums1);
+        }
+
+        public static string XorBlockUltraProMax<T>(string str1, string str2, IAlphabetModifier<T> modifier) where T : IAlphabet
+        {
+            string res = "";
+            for (int i = 0; i < str1.Length / 4; i++)
+                res += XorBlockMini(str1.Substring(i * 4, 4), str2.Substring(i * 4, 4), modifier);
+            return res;
+        }
+
+        public static string[] ProduceRoundsKeys()
     }
 }
