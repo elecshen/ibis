@@ -16,5 +16,7 @@ namespace MainWpf
             InitializeComponent();
             DataContext = new ViewModel();
         }
+
+       
     }
 }
