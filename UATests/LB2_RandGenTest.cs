@@ -172,7 +172,7 @@ namespace UATests
         public void CHCLCGM_Next(string seed, string expected, int steps)
         {
             var chclcgm = new CHCLCGM<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
-            chclcgm.Init(seed, [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)]);
+            chclcgm.Init(seed, LCGCoeffs.DefaultCoeffs);
 
             string result = "";
             for (int i = 0; i < steps; i++)

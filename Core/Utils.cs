@@ -1,4 +1,5 @@
 ﻿using Core.Alphabet;
+using Core.RandomGenerator;
 using Core.ShiftCipher;
 
 namespace Core
@@ -86,6 +87,12 @@ namespace Core
             return res;
         }
 
-        public static string[] ProduceRoundsKeys()
+        public static string[] ProduceRoundsKeys(int rounds, IRandCodeGenerator generator)
+        {
+            string[] keys = new string[rounds];
+            for (int i = 0; i < rounds; i++)
+                keys[i] = generator.Next();
+            return keys;
+        }
     }
 }
