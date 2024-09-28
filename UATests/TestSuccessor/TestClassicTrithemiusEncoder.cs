@@ -4,7 +4,7 @@ using Core.ShiftCipher.Trithemius;
 
 namespace UATests.TestSuccessor
 {
-    public class TestClassicTrithemiusEncoder(IAlphabet alphabet) : ClassicTrithemiusEncoder(alphabet)
+    public class TestClassicTrithemiusEncoder<T>(IAlphabet alphabet) : ClassicTrithemiusEncoder<T>(alphabet) where T : IAlphabet
     {
         public CircularList<char> TestGetKeyTable(string key) => GetKeyTable(key);
         public CircularList<char> TestGetKeyTable(IEnumerable<char> key) => GetKeyTable(key);

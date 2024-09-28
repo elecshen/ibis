@@ -1,9 +1,8 @@
 ﻿using Core.Alphabet;
-using System.Diagnostics.Metrics;
 
 namespace Core.ShiftCipher.Trithemius
 {
-    public class PolyTrithemiusEncoder(IAlphabet alphabet) : ClassicTrithemiusEncoder(alphabet)
+    public class PolyTrithemiusEncoder<T>(IAlphabet alphabet) : ClassicTrithemiusEncoder<T>(alphabet) where T : IAlphabet
     {
         protected void MakeIdleShift(ref CircularList<char> keyTable, int idleShift)
         {

@@ -3,7 +3,7 @@ using Core.ShiftCipher;
 
 namespace Core.RandomGenerator
 {
-    public class CHCLCGM<T>(IExtendedEncoder encoder, IAlphabetModifier<T> modifier) : CHCLCG<T>(encoder, modifier) where T : IAlphabet
+    public class CHCLCGM<T>(IExtendedEncoder<T> encoder, IAlphabetModifier<T> modifier) : CHCLCG<T>(encoder, modifier) where T : IAlphabet
     {
         public override void Init(string seed, LCGCoeffs[] coeffs)
         {
