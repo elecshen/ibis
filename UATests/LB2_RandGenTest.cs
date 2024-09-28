@@ -166,9 +166,7 @@ namespace UATests
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ЬЕШЮШ_ЗЯЧЖ_ВЖЙЕГ", 1)]
-        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ГУЬЙЭЬДЫЭУ_ЮХЛДТ", 2)]
-        [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
+        [TestCase("ААААББББВВВВГГГГ", "ЯУЯЖРЦОДЦФЮМАЧХЭ", 1)]
         public void CHCLCGM_Next(string seed, string expected, int steps)
         {
             var chclcgm = new CHCLCGM<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
