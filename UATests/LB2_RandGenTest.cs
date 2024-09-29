@@ -215,9 +215,15 @@ namespace UATests
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ЬЕШЮШ_ЗЯЧЖ_ВЖЙЕГ", 1)]
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ГУЬЙЭЬДЫЭУ_ЮХЛДТ", 2)]
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "ДИЛ_АСЩ_ВЧЯП_ИЕХ", 3)]
-        [TestCase("ОНИГИРИ_В_ПИКАЧУ", "Б_ЭБЫЖКДЛЭ_ХЭХЙЕ", 1)]
-        [TestCase("ОНИГИРИ_В_ПИКАЧУ", "З_ТЧФШЦНФРЯУИДЬЦ", 2)]
-        [TestCase("ОНИГИРИ_В_ПИКАЧУ", "ДПУВЯВФТЯНЖЦНФ_А", 3)]
+        [TestCase("ААААББББВВВВГГГГ", "ЭОФТШУЕАЯЭЩРСЭЛВ", 1)]
+        [TestCase("ААААББББВВВВГГГГ", "ЖЛМЦХООРЙЯУДХЫНЖ", 2)]
+        [TestCase("ААААББББВВВВГГГГ", "РЮШНП_ЕЛЕЖУХМГЧЮ", 3)]
+        [TestCase("ВВВВГГГГААААББББ", "ЭОФТШУЕАЯЭЩРСЭЛВ", 1)]
+        [TestCase("ВВВВГГГГААААББББ", "ЖЛМЦХООРЙЯУДХЫНЖ", 2)]
+        [TestCase("ВВВВГГГГААААББББ", "РЮШНП_ЕЛЕЖУХМГЧЮ", 3)]
+        [TestCase("ААААААААББББББББ", "________________", 1)]
+        [TestCase("ААААААААББББББББ", "________________", 2)]
+        [TestCase("ААААААААББББББББ", "________________", 3)]
         public void CHCLCG_Next(string seed, string expected, int steps)
         {
             var chclcg = new CHCLCG<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
@@ -242,6 +248,14 @@ namespace UATests
         }
 
         [TestCase("ААААББББВВВВГГГГ", "ЯУЯЖРЦОДЦФЮМАЧХЭ", 1)]
+        [TestCase("ААААББББВВВВГГГГ", "ЮИВПЗЩИРХЖФВЛРПУ", 2)]
+        [TestCase("ААААББББВВВВГГГГ", "ЯАЛМБЧПЖЕИКЧУЙШ_", 3)]
+        [TestCase("ВВВВГГГГААААББББ", "ТМТЛЦПВЗТЦШФПДОЖ", 1)]
+        [TestCase("ВВВВГГГГААААББББ", "СДИБЕСТЛКПЬПУНАЛ", 2)]
+        [TestCase("ВВВВГГГГААААББББ", "ЧМТЮЩЧППЫЧЕАРЮЙЖ", 3)]
+        [TestCase("ААААААААББББББББ", "ИХЯМУНКТЕЭГЬФЕЦТ", 1)]
+        [TestCase("ААААААААББББББББ", "ЦТЮЕОБМЖХХЦИЫХЦХ", 2)]
+        [TestCase("ААААААААББББББББ", "ЗМ_ЩСФЕПДИХХСМЮД", 3)]
         public void CHCLCGM_Next(string seed, string expected, int steps)
         {
             var chclcgm = new CHCLCGM<RusAlphabet>(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
