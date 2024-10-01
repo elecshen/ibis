@@ -2,7 +2,7 @@
 
 namespace Core.ShiftCipher.Trithemius
 {
-    public class ClassicTrithemiusEncoder : IEncoder
+    public class ClassicTrithemiusEncoder<T> : IEncoder<T> where T : IAlphabet
     {
         protected readonly IAlphabet _alphabet;
 

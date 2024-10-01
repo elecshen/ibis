@@ -19,5 +19,11 @@
             RemoveAt(from);
             Insert(to, temp);
         }
+
+        public new IEnumerable<T> GetRange(int index, int count)
+        {
+            for (int i = 0; i < count; i++)
+                yield return this[index + i];
+        }
     }
 }

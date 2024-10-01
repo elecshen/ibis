@@ -2,7 +2,8 @@
 {
     public class AlphabetModifier<T>(T alphabet) : IAlphabetModifier<T> where T : IAlphabet
     {
-        private readonly IAlphabet _alphabet = alphabet;
+        private readonly T _alphabet = alphabet;
+        public T Alphabet { get { return _alphabet; } }
 
         public char SumChar(char c1, char c2) => _alphabet[_alphabet[c1] + _alphabet[c2]];
 
@@ -66,6 +67,25 @@
                 res = _alphabet[(int)num % baseNum] + res;
                 num /= baseNum;
             }
+            return res;
+        }
+
+        public IEnumerable<bool> NumToBin(int num, int significantBitPos = -1)
+        {
+            if (significantBitPos == -1)
+                significantBitPos = _alphabet.GetSignificantBitPos();
+            for (var i = significantBitPos - 1; i >= 0; i--)
+                yield return (num & (1 << i)) != 0;
+        }
+
+        public int BinToNum(IEnumerable<bool> bits, int significantBitPos = -1)
+        {
+            if (significantBitPos == -1)
+                significantBitPos = _alphabet.GetSignificantBitPos();
+            int res = 0;
+            for (var i = 0; i < significantBitPos; i++)
+                if (bits.ElementAt(i))
+                    res |= 1 << (significantBitPos - i - 1);
             return res;
         }
     }

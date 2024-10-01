@@ -2,7 +2,7 @@
 
 namespace Core.ShiftCipher.Trithemius
 {
-    public class SBlockModPolyTrithemiusEncoder<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncoder(alphabet) where T : IAlphabet
+    public class SBlockModPolyTrithemiusEncoder<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncoder<T>(alphabet) where T : IAlphabet
     {
         protected readonly IAlphabetModifier<T> _modifier = alphabetModifier;
 

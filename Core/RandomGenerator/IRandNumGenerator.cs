@@ -1,6 +1,6 @@
 ﻿namespace Core.RandomGenerator
 {
-    public interface IRandGenerator
+    public interface IRandNumGenerator
     {
         public int Next();
     }

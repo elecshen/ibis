@@ -32,5 +32,7 @@
         public IEnumerable<char> Except(IEnumerable<char> second);
 
         public bool IsValidString(string str);
+
+        public int GetSignificantBitPos();
     }
 }

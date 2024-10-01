@@ -3,13 +3,13 @@ using Core.ShiftCipher;
 
 namespace Core.RandomGenerator
 {
-    public class CHCLCG<T>(IExtendedEncoder encoder, IAlphabetModifier<T> modifier) where T : IAlphabet
+    public class CHCLCG<T>(IExtendedEncoder<T> encoder, IAlphabetModifier<T> modifier) : IRandCodeGenerator<T> where T : IAlphabet
     {
         protected HCLCG[] _hCLCGs = new HCLCG[4];
         protected IAlphabetModifier<T> _modifier = modifier;
-        protected IExtendedEncoder _encoder = encoder;
+        protected IExtendedEncoder<T> _encoder = encoder;
 
-        public void Init(string seed, LCGCoeffs[] coeffs)
+        public virtual void Init(string seed, LCGCoeffs[] coeffs)
         {
             if (seed.Length != 16 || coeffs.Length != 3)
                 throw new ArgumentException("invalid_input");

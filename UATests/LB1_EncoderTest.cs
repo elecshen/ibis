@@ -7,8 +7,8 @@ namespace UATests
     public class LB1_EncoderTest
     {
         private RusAlphabet _alphabet;
-        private TestClassicTrithemiusEncoder _classicTrithemiusEncoder;
-        private TestPolyTrithemiusEncoder _polyTrithemiusEncoder;
+        private TestClassicTrithemiusEncoder<RusAlphabet> _classicTrithemiusEncoder;
+        private TestPolyTrithemiusEncoder<RusAlphabet> _polyTrithemiusEncoder;
         private AlphabetModifier<RusAlphabet> _alphabetModifier;
         private TestSBlockModPolyTrithemiusEncoder<RusAlphabet> _sBlockModPolyTrithemiusEncoder;
 
