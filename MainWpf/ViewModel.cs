@@ -2,6 +2,7 @@
 using Core.RandomGenerator;
 using Core.ShiftCipher.Trithemius;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -202,6 +203,84 @@ namespace MainWpf
             GeneratedRandomOutput = generator.Next();
             GeneratedRandomNumericOutput = ((ulong)alphabetModifier.TextToBaseNum(generatedRandomOutput)).ToString();
         });
+
+        #region ИССЛЕДОВАНИЕ
+        public ICommand Generate100ValuesForSeedCommand => new Command(obj =>
+        {
+            if (!string.IsNullOrWhiteSpace(Seed)
+            && Seed.Length == 16
+            && !Seed.ToUpper().Contains("Ё")
+            && !Seed.ToUpper().Contains("Ъ"))
+            {
+                generator.Init(Seed, coeffs);
+                var numbers = GenerateValidRandomNumbers(generator, 4000);
+                SaveNumbersToFile(numbers, $"{Seed}_numbers.txt");
+            }
+            else
+            {
+                MessageBox.Show("Неверный ввод значения инициализации! Требования:" +
+                                "\n- длина - 16 символов," +
+                                "\n- символы русского алфавита" +
+                                "\n- не содержит букв `ё` и `ъ`.");
+            }
+        });
+
+        private List<ulong> GenerateValidRandomNumbers(CHCLCGM<RusAlphabet> generator, int count)
+        {
+            List<ulong> validNumbers = new List<ulong>();
+            while (validNumbers.Count < count)
+            {
+                var randomText = generator.Next();
+                ulong numericValue = (ulong)alphabetModifier.TextToBaseNum(randomText);
+
+                var numericString = numericValue.ToString();
+
+                if (numericValue > 0 /*&& numericString.Length == 16*/&& numericValue <= ulong.MaxValue)
+                {
+                    validNumbers.Add((ulong)numericValue);
+                }
+            }
+            return validNumbers;
+        }
+        private void SaveNumbersToFile(List<ulong> numbers, string fileName)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileName))
+                {
+                    foreach (var number in numbers)
+                    {
+                        writer.WriteLine(number);
+                    }
+                }
+                MessageBox.Show($"Результаты сохранены в файл {fileName}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении файла: {ex.Message}");
+            }
+        }
+
+        public ICommand GenerateForThreeSeedsCommand => new Command(obj =>
+        {
+            var seeds = new string[] { "ААААББББВВВВГГГГ", "АБВГДЕЖЗИЙКЛМНОП", "ФЩПТУГИЕЫБЯЛАНГГ" };
+
+            foreach (var seed in seeds)
+            {
+                generator.Init(seed, coeffs);
+                var numbers = GenerateValidRandomNumbers(generator, 4000);
+                SaveNumbersToFile(numbers, $"{seed}_numbers.txt");
+            }
+        });
+        #endregion
+
+
+
+
+
+
+
+
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

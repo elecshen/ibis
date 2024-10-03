@@ -98,8 +98,32 @@
                 <Label Content="Значение генерации" HorizontalAlignment="Left" Margin="331,38,0,0" VerticalAlignment="Top" Grid.Column="2"/>
                 <Label x:Name="OutputLabel"  Content="{Binding GeneratedRandomOutput}" HorizontalAlignment="Left" Margin="331,65,0,0" VerticalAlignment="Top" BorderBrush="#FF295809" Width="281" BorderThickness="1,1,1,1" ClipToBounds="False" Height="26" Grid.Column="2"/>
                 <Label x:Name="OutputNumericLabel"  Content="{Binding GeneratedRandomNumericOutput}" HorizontalAlignment="Left" Margin="331,107,0,0" VerticalAlignment="Top" BorderBrush="#FF295809" Width="281" BorderThickness="1,1,1,1" ClipToBounds="False" Height="26" Grid.Column="2"/>
+                
             </Grid>
         </TabItem>
+        <TabItem Header="TestLab2">
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="13*"/>
+                    <ColumnDefinition Width="874*"/>
+                </Grid.ColumnDefinitions>
+                <!-- Поле для ввода сидов -->
+                <TextBox Text="{Binding Seed}" Width="200" Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Grid.Column="2"/>
+
+                <!-- Кнопка для генерации чисел для одного сида -->
+                <Button Content="Генерация по заданному сиду" Command="{Binding Generate100ValuesForSeedCommand}" Width="200" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
+
+                <!-- Кнопка для генерации чисел для трех сидов -->
+                <Button Content="Генерация для трёх сидов" Command="{Binding GenerateForThreeSeedsCommand}" Width="200" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Grid.ColumnSpan="3"/>
+
+                <!-- Поле для отображения сгенерированного значения -->
+                <TextBlock Text="{Binding GeneratedRandomNumericOutput}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,60,0,0" Grid.Column="2"/>
+            </Grid>
+        </TabItem>
+
+
 
 
 
