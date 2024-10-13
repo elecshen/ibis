@@ -1,4 +1,5 @@
-﻿using Core.Alphabet;
+﻿using Core;
+using Core.Alphabet;
 using Core.RandomGenerator;
 using Core.ShiftCipher.Trithemius;
 using System.ComponentModel;
@@ -16,6 +17,11 @@ namespace MainWpf
         //переменные кодирования
         private string encodeInputText;
         private string encodeOutputText;
+        private string inputblocklab3;
+ 
+        private string outputencodelab3;
+        private string outputdecodelab3;
+
 
         //переменные декодирования
         private string decodeInputText;
@@ -24,6 +30,9 @@ namespace MainWpf
         //переменные настройки
         private string key;
         private int shift;
+        private int rounds;
+        private string keylab3;
+        
 
         // переменные генератора случайных чисел
         private string seed;
@@ -51,13 +60,19 @@ namespace MainWpf
             encodeOutputText = "";
             decodeInputText = "";
             decodeOutputText = "";
+            inputblocklab3 = "";
+            outputencodelab3 = "";
+            outputdecodelab3 = "";
             key = "";
+            keylab3 = "";
             shift = 0;
+            rounds = 0;
             var a = new RusAlphabet();
             alphabetModifier = new AlphabetModifier<RusAlphabet>(a);
             encoder = new(a, alphabetModifier);
             genValueButtonVisibility = Visibility.Hidden;
             generator = new(encoder, alphabetModifier);
+
         }
 
         public Visibility GenValueButtonVisibility
@@ -145,6 +160,15 @@ namespace MainWpf
                 OnPropertyChanged();
             }
         }
+        public string KeyLab3
+        {
+            get => keylab3;
+            set
+            {
+                keylab3 = value;
+                OnPropertyChanged();
+            }
+        }
 
         public int Shift
         {
@@ -154,6 +178,47 @@ namespace MainWpf
                 shift = value;
                 OnPropertyChanged();
             }
+        }
+
+        public string InputBlockLab3
+        {
+            get => inputblocklab3;
+            set
+            {
+                inputblocklab3 = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string OutputEncodeLab3
+        {
+            get => outputencodelab3;
+            set
+            {
+                outputencodelab3 = value;
+                OnPropertyChanged();
+            }
+        }
+        public string OutputDecodeLab3
+        {
+            get => outputdecodelab3;
+            set
+            {
+                outputdecodelab3 = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public int RoundsLab3
+        {
+            get => rounds;
+            set
+            {
+                rounds = value;
+                OnPropertyChanged();
+            }
+
         }
 
         public ICommand EncodeCommand => new Command(obj =>
@@ -203,6 +268,20 @@ namespace MainWpf
             GeneratedRandomOutput = generator.Next();
             GeneratedRandomNumericOutput = ((ulong)alphabetModifier.TextToBaseNum(generatedRandomOutput)).ToString();
         });
+        //Lab3
+
+        public ICommand EncodeCommandLab3 => new Command(obj =>
+        {
+            OutputEncodeLab3 = Utils.SPNetEncode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+
+
+        });
+
+        public ICommand DecodeCommandLab3 => new Command(obj =>
+        {
+            OutputDecodeLab3 = Utils.SPNetDecode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+        });
+
 
         #region ИССЛЕДОВАНИЕ
         public ICommand Generate100ValuesForSeedCommand => new Command(obj =>
@@ -273,10 +352,6 @@ namespace MainWpf
             }
         });
         #endregion
-
-
-
-
 
 
 
