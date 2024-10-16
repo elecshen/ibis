@@ -14,14 +14,6 @@ namespace MainWpf
 {
     public class ViewModel:INotifyPropertyChanged
     {
-
-        // Переменные исследования 
-        public string InputBlockConfusion { get; set; } = "";
-        public string KeyConfusion { get; set; } = "";
-        public int RoundsConfusion { get; set; }
-        public int ExperimentsCount { get; set; }
-        public string OutputConfusion { get; set; } = "";
-
         //переменные кодирования
         private string encodeInputText;
         private string encodeOutputText;
@@ -365,7 +357,8 @@ namespace MainWpf
         public ICommand AnalyzeConfusionCommand => new Command(obj =>
         {
             string initialInput = InputBlockLab3;
-            
+
+            Random rand = new();
             List<int> bitDifferences = [];
 
             // Сохранение предыдущего зашифрованного выхода для сравнения
@@ -376,10 +369,15 @@ namespace MainWpf
             foreach (var item in modifier.TextToNums(initialInput))
                 bits.AddRange(modifier.NumToBin(item));
             // Процесс сбора данных для 2000 итераций
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0, counter = 0; counter < 2000; i++)
             {
+                if (rand.NextDouble() < 0.5)
+                    continue;
+                if (i >= bits.Count) i %= bits.Count;
+                counter++;
+
                 // Инвертируем i бит
-                bits[i % bits.Count] = !bits[i % bits.Count];
+                bits[i] = !bits[i];
 
                 // Преобразуем биты обратно в строку
                 var res = new int[initialInput.Length];
@@ -400,9 +398,52 @@ namespace MainWpf
                 previousEncrypted = currentEncrypted;
             }
 
-            SaveResultsToFile(bitDifferences, "bit_differences.txt");
+            //SaveResultsToFile(bitDifferences, "bit_differences.txt");
 
             MessageBox.Show("Анализ запутанности завершен. Данные сохранены в bit_differences.txt.");
+        });
+
+        public ICommand AlnalyzeDiffusionCommand => new Command(obj =>
+        {
+            CHCLCGM<RusAlphabet> localGenerator = new(encoder, modifier);
+            localGenerator.Init(InputBlockLab3, LCGCoeffs.DefaultCoeffs);
+
+            Random rand = new();
+
+            List<int> counts = [];
+            for (int i = 0; i < 80; i++)
+                counts.Add(0);
+            int k = rand.Next(80);
+            for (int i = 0; i < 1000; i++)
+            {
+                List<bool> bits = [];
+                string curVal = localGenerator.Next();
+
+                // Сохранение предыдущего зашифрованного выхода для сравнения
+                string previousEncrypted = Utils.SPNetEncode(curVal, KeyLab3, RoundsLab3, encoder, modifier, generator);
+
+                foreach (var item in modifier.TextToNums(curVal))
+                    bits.AddRange(modifier.NumToBin(item));
+
+                // Инвертируем k бит
+                bits[k % bits.Count] = !bits[k % bits.Count];
+
+                // Преобразуем биты обратно в строку
+                var res = new int[16];
+                for (var j = 0; j < res.Length; j++)
+                    res[j] = modifier.BinToNum(bits.GetRange(j * modifier.Alphabet.GetSignificantBitPos(), modifier.Alphabet.GetSignificantBitPos()));
+                string modifiedInput = modifier.NumsToText(res);
+
+                // кря
+                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
+
+                // Считаем количество измененных битов между текущим и предыдущим зашифрованным текстом
+                CountChangedBitsForEach(previousEncrypted, currentEncrypted, ref counts);
+            }
+
+            //SaveResultsToFile(counts, "bit_diffusion.txt");
+
+            MessageBox.Show($"Анализ рассеивания завершен. Изменяемый бит: {k}. Данные сохранены в bit_diffusion.txt.");
         });
 
         private int CountChangedBits(string str1, string str2)
@@ -418,6 +459,19 @@ namespace MainWpf
                     count++;
             return count;
         }
+
+        private void CountChangedBitsForEach(string str1, string str2, ref List<int> count)
+        {
+            List<bool> bits1 = [], bits2 = [];
+            foreach (var item in modifier.TextToNums(str1))
+                bits1.AddRange(modifier.NumToBin(item));
+            foreach (var item in modifier.TextToNums(str2))
+                bits2.AddRange(modifier.NumToBin(item));
+            for (int i = 0; i < bits1.Count; i++)
+                if (bits1[i] != bits2[i])
+                    count[i]++;
+        }
+
         private void SaveResultsToFile(List<int> results, string filePath)
         {
             using StreamWriter writer = new(filePath);
