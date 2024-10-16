@@ -398,7 +398,7 @@ namespace MainWpf
                 previousEncrypted = currentEncrypted;
             }
 
-            //SaveResultsToFile(bitDifferences, "bit_differences.txt");
+            SaveResultsToFile(bitDifferences, "bit_differences.txt");
 
             MessageBox.Show("Анализ запутанности завершен. Данные сохранены в bit_differences.txt.");
         });
@@ -441,7 +441,7 @@ namespace MainWpf
                 CountChangedBitsForEach(previousEncrypted, currentEncrypted, ref counts);
             }
 
-            //SaveResultsToFile(counts, "bit_diffusion.txt");
+            SaveResultsToFile(counts, "bit_diffusion.txt");
 
             MessageBox.Show($"Анализ рассеивания завершен. Изменяемый бит: {k}. Данные сохранены в bit_diffusion.txt.");
         });
