@@ -1,9 +1,12 @@
 ﻿using Core;
 using Core.Alphabet;
 using Core.RandomGenerator;
+using Core.ShiftCipher;
 using Core.ShiftCipher.Trithemius;
+using Microsoft.Win32;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -14,6 +17,14 @@ namespace MainWpf
 {
     public class ViewModel:INotifyPropertyChanged
     {
+
+        // Переменные исследования 
+        public string InputBlockConfusion { get; set; }
+        public string KeyConfusion { get; set; }
+        public int RoundsConfusion { get; set; }
+        public int ExperimentsCount { get; set; }
+        public string OutputConfusion { get; set; }
+
         //переменные кодирования
         private string encodeInputText;
         private string encodeOutputText;
@@ -283,7 +294,7 @@ namespace MainWpf
         });
 
 
-        #region ИССЛЕДОВАНИЕ
+        #region ИССЛЕДОВАНИЕ ЛБ 2
         public ICommand Generate100ValuesForSeedCommand => new Command(obj =>
         {
             if (!string.IsNullOrWhiteSpace(Seed)
@@ -353,9 +364,77 @@ namespace MainWpf
         });
         #endregion
 
+        #region ИССЛЕДОВАНИЕ ЛБ 3
+        public ICommand AnalyzeConfusionCommand => new Command(obj =>
+        {
+            string initialInput = InputBlockLab3;
 
+            List<int> bitDifferences = new List<int>();
 
+            // Сохранение предыдущего зашифрованного выхода для сравнения
+            string previousEncrypted = Utils.SPNetEncode(initialInput, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
 
+            Random random = new Random();
+
+            // Процесс сбора данных для 2000 итераций
+            for (int i = 0; i < 2000; i++)
+            {
+                // Пройти по каждому биту входа и с вероятностью 1/2 инвертировать его
+                char[] inputBits = initialInput.ToCharArray();
+                for (int j = 0; j < inputBits.Length; j++)
+                {
+                    // Инвертируем бит с вероятностью 1/2
+                    if (random.NextDouble() < 0.5)
+                    {
+                        // Преобразуем символ в число, инвертируем его и вернем обратно в символ
+                        inputBits[j] = (inputBits[j] == '0') ? '1' : '0';
+                    }
+                }
+
+                // Преобразуем измененный массив битов обратно в строку
+                string modifiedInput = new string(inputBits);
+
+                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+
+                // Считаем количество измененных битов между текущим и предыдущим зашифрованным текстом
+                int changedBitsCount = CountChangedBits(previousEncrypted, currentEncrypted);
+
+                // Добавляем результат в список
+                bitDifferences.Add(changedBitsCount);
+
+                // Обновляем предыдущий зашифрованный текст для следующего раунда
+                previousEncrypted = currentEncrypted;
+            }
+
+            SaveResultsToFile(bitDifferences, "bit_differences.txt");
+
+            MessageBox.Show("Анализ запутанности завершен. Данные сохранены в bit_differences.txt.");
+        });
+
+        private int CountChangedBits(string str1, string str2)
+        {
+            int count = 0;
+            for (int i = 0; i < str1.Length; i++)
+            {
+                if (str1[i] != str2[i])
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        private void SaveResultsToFile(List<int> results, string filePath)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                foreach (var result in results)
+                {
+                    writer.WriteLine(result);
+                }
+            }
+        }
+
+        #endregion
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

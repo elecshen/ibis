@@ -173,5 +173,40 @@
             </Grid>
 
         </TabItem>
+        <TabItem Header="Scatter Test">
+            <Grid>
+                <Grid.Background>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Grid>
+                                <Image Source="Resources/cat4.png" Stretch="Uniform" Opacity="1"/>
+                                <Rectangle Fill="White" Opacity="0"/>
+                            </Grid>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="273" />
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="Input Block:" VerticalAlignment="Center" Height="26"/>
+                <TextBox Name="InputBlockScatter" Grid.Column="1" Height="24" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding InputBlockLab3}"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Key:" VerticalAlignment="Center" Height="26" />
+                <TextBox Name="KeyScatter" Grid.Row="1" Grid.Column="1" Height="24" Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding KeyLab3}"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Rounds:" VerticalAlignment="Center" Height="26" />
+                <TextBox Name="RoundsScatter" Grid.Row="2" Grid.Column="1" Height="24" Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding RoundsLab3}"/>
+                <Button Grid.Row="3" Grid.Column="1" Height="24" Width="150" Content="Start Scatter Test" Margin="3,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5,2" FontSize="12" Background="Honeydew" Command="{Binding AnalyzeConfusionCommand}"/>
+            </Grid>
+        </TabItem>
     </TabControl>
 </Window>
