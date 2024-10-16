@@ -19,8 +19,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\cat3.jpg" />
     <None Remove="Resources\cat4.png" />
     <None Remove="Resources\matrix.gif" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\cat3.jpg" />
   </ItemGroup>
 
   <ItemGroup>

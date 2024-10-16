@@ -1,12 +1,9 @@
 ﻿using Core;
 using Core.Alphabet;
 using Core.RandomGenerator;
-using Core.ShiftCipher;
 using Core.ShiftCipher.Trithemius;
-using Microsoft.Win32;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -19,11 +16,11 @@ namespace MainWpf
     {
 
         // Переменные исследования 
-        public string InputBlockConfusion { get; set; }
-        public string KeyConfusion { get; set; }
+        public string InputBlockConfusion { get; set; } = "";
+        public string KeyConfusion { get; set; } = "";
         public int RoundsConfusion { get; set; }
         public int ExperimentsCount { get; set; }
-        public string OutputConfusion { get; set; }
+        public string OutputConfusion { get; set; } = "";
 
         //переменные кодирования
         private string encodeInputText;
@@ -57,13 +54,13 @@ namespace MainWpf
         private readonly ExtSBlockModPolyTrithemiusEncoder<RusAlphabet> encoder;
 
         // модификатор алфавита
-        private AlphabetModifier<RusAlphabet> alphabetModifier;
+        private readonly AlphabetModifier<RusAlphabet> modifier;
 
         // генератор
         private readonly CHCLCGM<RusAlphabet> generator;
 
         // коэффициенты для LCG генератора
-        private LCGCoeffs[] coeffs = [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)];
+        private readonly LCGCoeffs[] coeffs = [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)];
 
         public ViewModel()
         {
@@ -79,10 +76,10 @@ namespace MainWpf
             shift = 0;
             rounds = 0;
             var a = new RusAlphabet();
-            alphabetModifier = new AlphabetModifier<RusAlphabet>(a);
-            encoder = new(a, alphabetModifier);
+            modifier = new AlphabetModifier<RusAlphabet>(a);
+            encoder = new(a, modifier);
             genValueButtonVisibility = Visibility.Hidden;
-            generator = new(encoder, alphabetModifier);
+            generator = new(encoder, modifier);
 
         }
 
@@ -277,20 +274,20 @@ namespace MainWpf
         public ICommand GenerateNextValueCommand => new Command(obj =>
         {
             GeneratedRandomOutput = generator.Next();
-            GeneratedRandomNumericOutput = ((ulong)alphabetModifier.TextToBaseNum(generatedRandomOutput)).ToString();
+            GeneratedRandomNumericOutput = ((ulong)modifier.TextToBaseNum(generatedRandomOutput)).ToString();
         });
         //Lab3
 
         public ICommand EncodeCommandLab3 => new Command(obj =>
         {
-            OutputEncodeLab3 = Utils.SPNetEncode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+            OutputEncodeLab3 = Utils.SPNetEncode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, modifier, generator);
 
 
         });
 
         public ICommand DecodeCommandLab3 => new Command(obj =>
         {
-            OutputDecodeLab3 = Utils.SPNetDecode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+            OutputDecodeLab3 = Utils.SPNetDecode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, modifier, generator);
         });
 
 
@@ -321,7 +318,7 @@ namespace MainWpf
             while (validNumbers.Count < count)
             {
                 var randomText = generator.Next();
-                ulong numericValue = (ulong)alphabetModifier.TextToBaseNum(randomText);
+                ulong numericValue = (ulong)modifier.TextToBaseNum(randomText);
 
                 var numericString = numericValue.ToString();
 
@@ -368,33 +365,30 @@ namespace MainWpf
         public ICommand AnalyzeConfusionCommand => new Command(obj =>
         {
             string initialInput = InputBlockLab3;
-
-            List<int> bitDifferences = new List<int>();
+            
+            List<int> bitDifferences = [];
 
             // Сохранение предыдущего зашифрованного выхода для сравнения
-            string previousEncrypted = Utils.SPNetEncode(initialInput, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+            string previousEncrypted = Utils.SPNetEncode(initialInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
 
-            Random random = new Random();
-
+            // Переводим входную строку в биты
+            List<bool> bits = [];
+            foreach (var item in modifier.TextToNums(initialInput))
+                bits.AddRange(modifier.NumToBin(item));
             // Процесс сбора данных для 2000 итераций
             for (int i = 0; i < 2000; i++)
             {
-                // Пройти по каждому биту входа и с вероятностью 1/2 инвертировать его
-                char[] inputBits = initialInput.ToCharArray();
-                for (int j = 0; j < inputBits.Length; j++)
-                {
-                    // Инвертируем бит с вероятностью 1/2
-                    if (random.NextDouble() < 0.5)
-                    {
-                        // Преобразуем символ в число, инвертируем его и вернем обратно в символ
-                        inputBits[j] = (inputBits[j] == '0') ? '1' : '0';
-                    }
-                }
+                // Инвертируем i бит
+                bits[i % bits.Count] = !bits[i % bits.Count];
 
-                // Преобразуем измененный массив битов обратно в строку
-                string modifiedInput = new string(inputBits);
+                // Преобразуем биты обратно в строку
+                var res = new int[initialInput.Length];
+                for (var j = 0; j < res.Length; j++)
+                    res[j] = modifier.BinToNum(bits.GetRange(j * modifier.Alphabet.GetSignificantBitPos(), modifier.Alphabet.GetSignificantBitPos()));
+                string modifiedInput = modifier.NumsToText(res);
 
-                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, alphabetModifier, generator);
+                // кря
+                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
 
                 // Считаем количество измененных битов между текущим и предыдущим зашифрованным текстом
                 int changedBitsCount = CountChangedBits(previousEncrypted, currentEncrypted);
@@ -413,24 +407,23 @@ namespace MainWpf
 
         private int CountChangedBits(string str1, string str2)
         {
+            List<bool> bits1 = [], bits2 = [];
+            foreach (var item in modifier.TextToNums(str1))
+                bits1.AddRange(modifier.NumToBin(item));
+            foreach (var item in modifier.TextToNums(str2))
+                bits2.AddRange(modifier.NumToBin(item));
             int count = 0;
-            for (int i = 0; i < str1.Length; i++)
-            {
-                if (str1[i] != str2[i])
-                {
+            for (int i = 0; i < bits1.Count; i++)
+                if (bits1[i] != bits2[i])
                     count++;
-                }
-            }
             return count;
         }
         private void SaveResultsToFile(List<int> results, string filePath)
         {
-            using (StreamWriter writer = new StreamWriter(filePath))
+            using StreamWriter writer = new(filePath);
+            foreach (var result in results)
             {
-                foreach (var result in results)
-                {
-                    writer.WriteLine(result);
-                }
+                writer.WriteLine(result);
             }
         }
 
