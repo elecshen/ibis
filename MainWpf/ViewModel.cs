@@ -413,7 +413,7 @@ namespace MainWpf
             List<int> counts = [];
             for (int i = 0; i < 80; i++)
                 counts.Add(0);
-            int k = rand.Next(80);
+            int k = 5; //13 5
             for (int i = 0; i < 1000; i++)
             {
                 List<bool> bits = [];
@@ -441,9 +441,9 @@ namespace MainWpf
                 CountChangedBitsForEach(previousEncrypted, currentEncrypted, ref counts);
             }
 
-            SaveResultsToFile(counts, "bit_diffusion.txt");
+            SaveResultsToFile(counts, $"bit_diffusion_{k}.txt");
 
-            MessageBox.Show($"Анализ рассеивания завершен. Изменяемый бит: {k}. Данные сохранены в bit_diffusion.txt.");
+            MessageBox.Show($"Анализ рассеивания завершен. Изменяемый бит: {k}. Данные сохранены в bit_diffusion_{k}.txt.");
         });
 
         private int CountChangedBits(string str1, string str2)
