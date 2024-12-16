@@ -1,16 +1,15 @@
 using Core.Alphabet;
-using System;
-using UATests.TestSuccessor;
+using UATests.TestSuccessor.Encryptor;
 
 namespace UATests
 {
     public class LB1_EncoderTest
     {
         private RusAlphabet _alphabet;
-        private TestClassicTrithemiusEncoder<RusAlphabet> _classicTrithemiusEncoder;
-        private TestPolyTrithemiusEncoder<RusAlphabet> _polyTrithemiusEncoder;
         private AlphabetModifier<RusAlphabet> _alphabetModifier;
-        private TestSBlockModPolyTrithemiusEncoder<RusAlphabet> _sBlockModPolyTrithemiusEncoder;
+        private Test_ClassicTrithemiusEncoder<RusAlphabet> _classicTrithemiusEncoder;
+        private Test_PolyTrithemiusEncoder<RusAlphabet> _polyTrithemiusEncoder;
+        private Test_SBlockModPolyTrithemiusEncoder<RusAlphabet> _sBlockModPolyTrithemiusEncoder;
 
         [SetUp]
         public void Setup()

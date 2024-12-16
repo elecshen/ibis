@@ -1,4 +1,4 @@
-﻿namespace Core.RandomGenerator
+﻿namespace Core.RandomGenerator.LCG
 {
     public readonly struct LCGCoeffs(int a, int c, int m)
     {

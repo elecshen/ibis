@@ -31,8 +31,17 @@
         /// <returns></returns>
         public IEnumerable<char> Except(IEnumerable<char> second);
 
-        public bool IsValidString(string str);
+        /// <summary>
+        /// Проверяет наличие символа в алфавите
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <returns></returns>
+        public bool Contains(char ch);
 
+        /// <summary>
+        /// Возвращает количество бит необходимое для шифрования одного символа алфавита.
+        /// </summary>
+        /// <returns></returns>
         public int GetSignificantBitPos();
     }
 }

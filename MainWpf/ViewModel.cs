@@ -1,7 +1,7 @@
 ﻿using Core;
 using Core.Alphabet;
-using Core.RandomGenerator;
-using Core.ShiftCipher.Trithemius;
+using Core.Encryptor.Trithemius;
+using Core.RandomGenerator.LCG;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -43,7 +43,7 @@ namespace MainWpf
         private Visibility genValueButtonVisibility; 
 
         // расширенный энкодер
-        private readonly ExtSBlockModPolyTrithemiusEncoder<RusAlphabet> encoder;
+        private readonly ExtSBlockModPolyTrithemiusEncryptor<RusAlphabet> encoder;
 
         // модификатор алфавита
         private readonly AlphabetModifier<RusAlphabet> modifier;
@@ -266,7 +266,7 @@ namespace MainWpf
         public ICommand GenerateNextValueCommand => new Command(obj =>
         {
             GeneratedRandomOutput = generator.Next();
-            GeneratedRandomNumericOutput = ((ulong)modifier.TextToBaseNum(generatedRandomOutput)).ToString();
+            GeneratedRandomNumericOutput = ((ulong)modifier.TextToNumWithAlphabetBase(generatedRandomOutput)).ToString();
         });
         //Lab3
 
@@ -310,7 +310,7 @@ namespace MainWpf
             while (validNumbers.Count < count)
             {
                 var randomText = generator.Next();
-                ulong numericValue = (ulong)modifier.TextToBaseNum(randomText);
+                ulong numericValue = (ulong)modifier.TextToNumWithAlphabetBase(randomText);
 
                 var numericString = numericValue.ToString();
 

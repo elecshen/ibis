@@ -1,8 +1,8 @@
 ﻿using Core.Alphabet;
 
-namespace Core.ShiftCipher
+namespace Core.Encryptor
 {
-    public interface IEncoder<T> where T : IAlphabet
+    public interface IEncryptor<T> where T : IAlphabet
     {
         public string Encrypt(string value, string key, int idleShift = 0);
 

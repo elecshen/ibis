@@ -43,10 +43,9 @@
 
         public string NumsToText(IEnumerable<int> nums) => string.Join("", nums.Select(c => _alphabet[c]));
 
-        public long TextToBaseNum(string value, int baseNum = -1)
+        public long TextToNumWithAlphabetBase(string value)
         {
-            if(baseNum == -1) 
-                baseNum = _alphabet.Length;
+            int baseNum = _alphabet.Length;
             long res = 0;
             int pos = 1;
             foreach (var ch in value.Reverse())
@@ -57,10 +56,9 @@
             return res;
         }
 
-        public string BaseNumToText(long num, int baseNum = -1)
+        public string NumWithAlphabetBaseToText(long num)
         {
-            if (baseNum == -1) 
-                baseNum = _alphabet.Length;
+            int baseNum = _alphabet.Length;
             string res = "";
             for (int i = 0; i < 4; i++)
             {
@@ -70,23 +68,56 @@
             return res;
         }
 
-        public IEnumerable<bool> NumToBin(int num, int significantBitPos = -1)
+        public IEnumerable<bool> NumToBin(int num) => Utils.NumToBin(num, _alphabet.GetSignificantBitPos());
+
+        public int BinToNum(IEnumerable<bool> bits) => Utils.BinToNum(bits, _alphabet.GetSignificantBitPos());
+
+        public IEnumerable<bool> TextToBin(string value)
         {
-            if (significantBitPos == -1)
-                significantBitPos = _alphabet.GetSignificantBitPos();
-            for (var i = significantBitPos - 1; i >= 0; i--)
-                yield return (num & (1 << i)) != 0;
+            int endingStartIdx = value.IndexOfAny(['1', '0']);
+            IEnumerable<bool> bits;
+            if (endingStartIdx == -1)
+            {
+                bits = TextToNums(value).SelectMany(NumToBin);
+                return bits;
+            }
+            else
+            {
+                bits = TextToNums(value[..endingStartIdx]).SelectMany(NumToBin);
+                return bits.Concat(value[endingStartIdx..].Select(ch => ch == '1'));
+            }
         }
 
-        public int BinToNum(IEnumerable<bool> bits, int significantBitPos = -1)
+        public string BinToText(IEnumerable<bool> bits)
         {
-            if (significantBitPos == -1)
-                significantBitPos = _alphabet.GetSignificantBitPos();
-            int res = 0;
-            for (var i = 0; i < significantBitPos; i++)
-                if (bits.ElementAt(i))
-                    res |= 1 << (significantBitPos - i - 1);
+            string res = "";
+            var chunks = bits.Chunk(_alphabet.GetSignificantBitPos());
+            if (chunks.Last().Length != _alphabet.GetSignificantBitPos())
+            {
+                res = NumsToText(chunks.SkipLast(1).Select(BinToNum));
+                res += string.Join("", chunks.Last().Select(b => b ? '1' : '0'));
+            }
+            else
+                res = NumsToText(chunks.Select(BinToNum));
             return res;
+        }
+
+        public string Xor(string str1, string str2)
+        {
+            var nums1 = TextToNums(str1);
+            var nums2 = TextToNums(str2);
+            for (int i = 0; i < nums1.Length; i++)
+                nums1[i] = nums1[i] ^ nums2[i];
+            return NumsToText(nums1);
+        }
+
+        public string BinaryTextShift(string str, int shift)
+        {
+            var bits = new CircularList<bool>(TextToBin(str));
+            var res = new int[str.Length];
+            for (var i = 0; i < str.Length; i++)
+                res[i] = BinToNum(bits.GetRange(i * Alphabet.GetSignificantBitPos() - shift, Alphabet.GetSignificantBitPos()));
+            return NumsToText(res);
         }
     }
 }

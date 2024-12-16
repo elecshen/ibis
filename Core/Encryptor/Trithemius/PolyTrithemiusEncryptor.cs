@@ -1,8 +1,8 @@
 ﻿using Core.Alphabet;
 
-namespace Core.ShiftCipher.Trithemius
+namespace Core.Encryptor.Trithemius
 {
-    public class PolyTrithemiusEncoder<T>(IAlphabet alphabet) : ClassicTrithemiusEncoder<T>(alphabet) where T : IAlphabet
+    public class PolyTrithemiusEncryptor<T>(IAlphabet alphabet) : ClassicTrithemiusEncryptor<T>(alphabet) where T : IAlphabet
     {
         protected void MakeIdleShift(ref CircularList<char> keyTable, int idleShift)
         {
@@ -10,7 +10,7 @@ namespace Core.ShiftCipher.Trithemius
                 keyTable.ShiftElement(i, _alphabet.Length - 1);
         }
 
-        public string EncryptText(string value, string key, int tableShift, int idleShift)
+        protected string EncryptString(string value, string key, int tableShift, int idleShift)
         {
             string output = "";
             var keyTable = GetKeyTable(key);
@@ -18,7 +18,7 @@ namespace Core.ShiftCipher.Trithemius
             for (int i = 0; i < value.Length; i++)
             {
                 keyTable.ShiftElement(idleShift + i, _alphabet.Length - 1);
-                output += EncryptSym(value[i], keyTable, tableShift);
+                output += EncryptChar(value[i], keyTable, tableShift);
             }
             return output;
         }
@@ -30,7 +30,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Зашифрованная строка</returns>
-        public override string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
+        public override string Encrypt(string value, string key, int idleShift = 0) => EncryptString(value.ToUpper(), key.ToUpper(), EncodingShift, idleShift);
 
         /// <summary>
         /// Функция полиалфавитного шифра Тритемиуса.
@@ -39,6 +39,6 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public override string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
+        public override string Decrypt(string value, string key, int idleShift = 0) => EncryptString(value.ToUpper(), key.ToUpper(), DecodingShift, idleShift);
     }
 }

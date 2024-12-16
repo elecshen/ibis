@@ -1,34 +1,29 @@
 ﻿using Core;
 using Core.Alphabet;
-using Core.RandomGenerator;
-using Core.ShiftCipher.Trithemius;
+using Core.CombinedEncryptor.SPNet;
+using Core.RandomGenerator.LCG;
+using UATests.TestSuccessor.CombinedEncryptor;
+using UATests.TestSuccessor.Encryptor;
+using UATests.TestSuccessor.RandomGenerator;
 
 namespace UATests
 {
-    public class LB3_SPweb
+    public class LB3_CombinedEncryptor
     {
         private RusAlphabet _alphabet;
-        private AlphabetModifier<RusAlphabet> _alphabetModifier;
-        private ExtSBlockModPolyTrithemiusEncoder<RusAlphabet> _extSBlockModPolyTrithemiusEncoder;
-        private CHCLCGM<RusAlphabet> _generator;
+        private AlphabetModifier<RusAlphabet> _modifier;
+        private Test_ExtSBlockModPolyTrithemiusEncryptor<RusAlphabet> _encryptor;
+        private Test_CHCLCGM<RusAlphabet> _generator;
+        private Test_SPNetCombinedEncryptor<RusAlphabet> _combinedEncryptor;
 
         [SetUp]
         public void Setup()
         {
             _alphabet = new();
-            _alphabetModifier = new(_alphabet);
-            _extSBlockModPolyTrithemiusEncoder = new(_alphabet, _alphabetModifier);
-            _generator = new(_extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
-        }
-        // Проверка работоспособности операции побитного XOR, проверка ее обратности
-        [TestCase("АГАТ", "ТАГА", "СДДС")]
-        [TestCase("____", "АААА", "АААА")]
-        [TestCase("АБВГ", "АААА", "_ВБД")]
-        [TestCase("ТАГА", "АГАТ", "СДДС")]
-        public void XorBlockMini(string value1, string value2, string expected)
-        {
-            var result = Utils.XorBlockMini(value1, value2, _alphabetModifier);
-            Assert.That(result, Is.EqualTo(expected));
+            _modifier = new(_alphabet);
+            _encryptor = new(_alphabet, _modifier);
+            _generator = new(_encryptor, _modifier, LCGCoeffs.DefaultCoeffs);
+            _combinedEncryptor = new(_encryptor, _modifier, _generator);
         }
         // Проверка работоспособности операции побитного XOR, проверка ее обратности
         [TestCase("АГАТ", "ТАГА", "СДДС")]
@@ -41,9 +36,9 @@ namespace UATests
         [TestCase("ТОРТ_ХОЧЕТ_ГОРКУ", "ЮЬСТВГИЧ_ИЕГЬЭМЩ", "МТВ_ВСЕ_ЕЩЕ_ТЛЕН")]
         [TestCase("АГАТ", "СДДС", "ТАГА")]
         [TestCase("МТВ_ТЛЕН", "ЕЬОЕЭПМО", "КОЛЕНЬКА")]
-        public void XorBlockUltraProMax(string value1, string value2, string expected)
+        public void Xor(string value1, string value2, string expected)
         {
-            var result = Utils.XorBlockMini(value1, value2, _alphabetModifier);
+            var result = _modifier.Xor(value1, value2);
             Assert.That(result, Is.EqualTo(expected));
         }
         // Проверка работоспособности генерации раундовых ключей
@@ -51,7 +46,7 @@ namespace UATests
         [TestCase("КРАТНЫЙ__ЧЕТЫРЕМ", 5, new string[] { "ХЕЯРЩЛАЧ_ЫВСЗ_ЗК", "ЧФЗАЯТПДФШПОГОСЙ", "ВЦЗИЭЫРСФКЕМФПЮЗ", "ТЗЫПГМБШЕЗОНВШ_З", "ВАМ__ЬКЗАТГ_ЦЮБЗ" })]
         public void ProduceRoundsKeys(string key, int rounds, string[] expected)
         {
-            var result = Utils.ProduceRoundsKeys(key, rounds, _generator);
+            var result = _combinedEncryptor.ProduceRoundsKeys(key, rounds);
             Assert.That(result, Is.EqualTo(expected));
         }
         // Проверка работоспособности шифрования при помощи шифра перестановки с магическими квадратами
@@ -63,7 +58,7 @@ namespace UATests
         [TestCase("НТВ_ВСЕ_ЕЩЕ_ТЛЕН", 2, "_ЛЕНЕЕС_ВЕЩ_НТВТ")]
         public void MagicSquareEncode(string str, int matrixNum, string expected)
         {
-            var result = Utils.MagicSquareEncode(str, Utils.GetMatrix(matrixNum));
+            var result = MagicSquare.Encode(str, matrixNum);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -76,7 +71,7 @@ namespace UATests
         [TestCase("_ЛЕНЕЕС_ВЕЩ_НТВТ", 2, "НТВ_ВСЕ_ЕЩЕ_ТЛЕН")]
         public void MagicSquareDecode(string str, int matrixNum, string expected)
         {
-            var result = Utils.MagicSquareDecode(str, Utils.GetMatrix(matrixNum));
+            var result = MagicSquare.Decode(str, matrixNum);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -89,8 +84,8 @@ namespace UATests
         [TestCase(00000)]
         public void NumToBinToNum(int num)
         {
-            var tmp = _alphabetModifier.NumToBin(num);
-            var result = _alphabetModifier.BinToNum(tmp);
+            var tmp = _modifier.NumToBin(num);
+            var result = _modifier.BinToNum(tmp);
             Assert.That(result, Is.EqualTo(num));
         }
 
@@ -106,7 +101,7 @@ namespace UATests
         [TestCase("СКИЙ", 3, "ЙИМД")]
         public void BinaryTextShift(string value, int shift, string expected)
         {
-            var result = Utils.BinaryTextShift(value, shift, _alphabetModifier);
+            var result = _modifier.BinaryTextShift(value, shift);
             Assert.That(result, Is.EqualTo(expected));
         }
         // Проверка работоспособности прямого P-блока
@@ -124,7 +119,7 @@ namespace UATests
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", 4, "АЫРБК_КШТЙБПЧСШЛ")]
         public void PBlockEncode(string value, int shift, string expected)
         {
-            var result = Utils.PBlockEncode(value, shift, _alphabetModifier);
+            var result = _combinedEncryptor.PBlockEncode(value, shift);
             Assert.That(result, Is.EqualTo(expected));
         }
         // Проверка работоспособности обратного P-блока
@@ -142,7 +137,7 @@ namespace UATests
         [TestCase("АЫРБК_КШТЙБПЧСШЛ", 4, "АБВГДЕЖЗИЙКЛМНОП")]
         public void PBlockDecode(string value, int shift, string expected)
         {
-            var result = Utils.PBlockDecode(value, shift, _alphabetModifier);
+            var result = _combinedEncryptor.PBlockDecode(value, shift);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -164,7 +159,7 @@ namespace UATests
         [TestCase("АБВГДЕЖЗИЙКЛМНОП", "НТВ_ВСЕ_ЕЩЕ_ТЛЕН", 2, "СЛЗ_ОШЩЭЙЭБЭЗЧ_Х")]
         public void RoundSPEncode(string value, string key, int shift, string expected)
         {
-            var result = Utils.RoundSPEncode(value, key, shift, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            var result = _combinedEncryptor.RoundSPEncode(value, key, shift);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -181,7 +176,7 @@ namespace UATests
         [TestCase("СЛЗ_ОШЩЭЙЭБЭЗЧ_Х", "НТВ_ВСЕ_ЕЩЕ_ТЛЕН", 2,"АБВГДЕЖЗИЙКЛМНОП" )]
         public void RoundSPDecode(string value, string key, int shift, string expected)
         {
-            var result = Utils.RoundSPDecode(value, key, shift, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier);
+            var result = _combinedEncryptor.RoundSPDecode(value, key, shift);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -195,7 +190,7 @@ namespace UATests
         [TestCase("ААААААААААААААА_", "________________", 8, "ХЬ_ЩКЬФЬГЬДЮШЦФЩ")]
         public void SPNetEncode(string value, string key, int rounds, string expected)
         {
-            var result = Utils.SPNetEncode(value, key, rounds, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, _generator);
+            var result = _combinedEncryptor.Encrypt(value, key, rounds);
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -210,7 +205,7 @@ namespace UATests
         [TestCase("ХЬ_ЩКЬФЬГЬДЮШЦФЩ", "________________", 8, "ААААААААААААААА_")]
         public void SPNetDecode(string value, string key, int rounds, string expected)
         {
-            var result = Utils.SPNetDecode(value, key, rounds, _extSBlockModPolyTrithemiusEncoder, _alphabetModifier, _generator);
+            var result = _combinedEncryptor.Decrypt(value, key, rounds);
             Assert.That(result, Is.EqualTo(expected));
         }
     }

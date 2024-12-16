@@ -1,8 +1,8 @@
 ﻿using Core.Alphabet;
 
-namespace Core.ShiftCipher.Trithemius
+namespace Core.Encryptor.Trithemius
 {
-    public class SBlockModPolyTrithemiusEncoder<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncoder<T>(alphabet) where T : IAlphabet
+    public class SBlockModPolyTrithemiusEncryptor<T>(T alphabet, IAlphabetModifier<T> alphabetModifier) : PolyTrithemiusEncryptor<T>(alphabet) where T : IAlphabet
     {
         protected readonly IAlphabetModifier<T> _modifier = alphabetModifier;
 
@@ -48,9 +48,9 @@ namespace Core.ShiftCipher.Trithemius
             if (res is not null) return res;
 
             key = key.ToUpper();
-            string output = EncryptText(value.ToUpper(), key, EncodingShift, idleShift);
+            string output = EncryptString(value.ToUpper(), key, EncodingShift, idleShift);
             output = ImproveBlock(output, key, idleShift, true);
-            return output; 
+            return output;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Core.ShiftCipher.Trithemius
 
             key = key.ToUpper();
             string output = ImproveBlock(value.ToUpper(), key, idleShift, false);
-            output = EncryptText(output, key, DecodingShift, idleShift);
+            output = EncryptString(output, key, DecodingShift, idleShift);
             return output;
         }
     }

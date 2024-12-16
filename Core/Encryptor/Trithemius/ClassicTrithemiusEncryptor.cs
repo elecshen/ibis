@@ -1,8 +1,8 @@
 ﻿using Core.Alphabet;
 
-namespace Core.ShiftCipher.Trithemius
+namespace Core.Encryptor.Trithemius
 {
-    public class ClassicTrithemiusEncoder<T> : IEncoder<T> where T : IAlphabet
+    public class ClassicTrithemiusEncryptor<T> : IEncryptor<T> where T : IAlphabet
     {
         protected readonly IAlphabet _alphabet;
 
@@ -10,7 +10,7 @@ namespace Core.ShiftCipher.Trithemius
         protected readonly int DecodingShift;
 
         /// <param name="alphabet">Алфавит на основе, которого будет производиться шифрование.</param>
-        public ClassicTrithemiusEncoder(IAlphabet alphabet)
+        public ClassicTrithemiusEncryptor(IAlphabet alphabet)
         {
             _alphabet = alphabet;
             EncodingShift = 8;
@@ -34,19 +34,19 @@ namespace Core.ShiftCipher.Trithemius
             return keyTable;
         }
 
-        protected char EncryptSym(char c, CircularList<char> keyTable, int shift)
+        protected char EncryptChar(char c, CircularList<char> keyTable, int shift)
         {
             return keyTable[keyTable.IndexOf(c) + shift];
         }
 
-        protected string EncryptText(string value, string key, int tableShift)
+        protected string EncryptString(string value, string key, int tableShift)
         {
             string output = "";
             var keyTable = GetKeyTable(key);
             foreach (var letter in value)
             {
                 // Добавляем символ, находяйся на 8 впереди (при шифровании) или позади (при расшифровании)
-                output += EncryptSym(letter, keyTable, tableShift);
+                output += EncryptChar(letter, keyTable, tableShift);
             }
             return output;
         }
@@ -58,7 +58,7 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Игнорируется</param>
         /// <returns>Зашифрованная строка</returns>
-        public virtual string Encrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), EncodingShift);
+        public virtual string Encrypt(string value, string key, int idleShift = 0) => EncryptString(value.ToUpper(), key.ToUpper(), EncodingShift);
 
         /// <summary>
         /// Функция простого шифра Тритемиуса. Значение idleShift игнорируется.
@@ -67,6 +67,6 @@ namespace Core.ShiftCipher.Trithemius
         /// <param name="key">Секрет используемый при шифровании</param>
         /// <param name="idleShift">Холостой сдвиг</param>
         /// <returns>Исходная строка</returns>
-        public virtual string Decrypt(string value, string key, int idleShift = 0) => EncryptText(value.ToUpper(), key.ToUpper(), DecodingShift);
+        public virtual string Decrypt(string value, string key, int idleShift = 0) => EncryptString(value.ToUpper(), key.ToUpper(), DecodingShift);
     }
 }

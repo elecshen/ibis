@@ -6,6 +6,10 @@
     /// <typeparam name="T"></typeparam>
     public class CircularList<T> : List<T>
     {
+        public CircularList() : base() { }
+
+        public CircularList(IEnumerable<T> list) : base(list) { }
+
         public new T this[int index] => base[Utils.NormalizeIndex(index, Count)];
 
         /// <summary>
