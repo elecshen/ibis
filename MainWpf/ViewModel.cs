@@ -1,5 +1,6 @@
 ﻿using Core;
 using Core.Alphabet;
+using Core.CombinedEncryptor.SPNet;
 using Core.Encryptor.Trithemius;
 using Core.RandomGenerator.LCG;
 using System.ComponentModel;
@@ -35,9 +36,9 @@ namespace MainWpf
         
 
         // переменные генератора случайных чисел
-        private string seed;
-        private string generatedRandomOutput;
-        private string generatedRandomNumericOutput;
+        private string seed = "";
+        private string generatedRandomOutput = "";
+        private string generatedRandomNumericOutput = "";
 
         // Переменные управления интерфейсом
         private Visibility genValueButtonVisibility; 
@@ -51,8 +52,7 @@ namespace MainWpf
         // генератор
         private readonly CHCLCGM<RusAlphabet> generator;
 
-        // коэффициенты для LCG генератора
-        private readonly LCGCoeffs[] coeffs = [new(723482, 8677, 983609), new(252564, 9109, 961193), new(357630, 8971, 948209)];
+        private readonly SPNetCombinedEncryptor<RusAlphabet> combinedEncryptor;
 
         public ViewModel()
         {
@@ -71,7 +71,8 @@ namespace MainWpf
             modifier = new AlphabetModifier<RusAlphabet>(a);
             encoder = new(a, modifier);
             genValueButtonVisibility = Visibility.Hidden;
-            generator = new(encoder, modifier);
+            generator = new(encoder, modifier, LCGCoeffs.DefaultCoeffs);
+            combinedEncryptor = new(encoder, modifier, generator);
 
         }
 
@@ -254,7 +255,7 @@ namespace MainWpf
             && !Seed.ToUpper().Contains("Ё") 
             && !Seed.ToUpper().Contains("Ъ"))
             {
-                generator.Init(Seed, coeffs);
+                generator.Init(Seed);
                 GenValueButtonVisibility = Visibility.Visible;
 
             }
@@ -272,14 +273,14 @@ namespace MainWpf
 
         public ICommand EncodeCommandLab3 => new Command(obj =>
         {
-            OutputEncodeLab3 = Utils.SPNetEncode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, modifier, generator);
+            OutputEncodeLab3 = combinedEncryptor.Encrypt(InputBlockLab3, KeyLab3, RoundsLab3);
 
 
         });
 
         public ICommand DecodeCommandLab3 => new Command(obj =>
         {
-            OutputDecodeLab3 = Utils.SPNetDecode(InputBlockLab3, KeyLab3, RoundsLab3, encoder, modifier, generator);
+            OutputDecodeLab3 = combinedEncryptor.Decrypt(InputBlockLab3, KeyLab3, RoundsLab3);
         });
 
 
@@ -291,7 +292,7 @@ namespace MainWpf
             && !Seed.ToUpper().Contains("Ё")
             && !Seed.ToUpper().Contains("Ъ"))
             {
-                generator.Init(Seed, coeffs);
+                generator.Init(Seed);
                 var numbers = GenerateValidRandomNumbers(generator, 4000);
                 SaveNumbersToFile(numbers, $"{Seed}_numbers.txt");
             }
@@ -306,17 +307,15 @@ namespace MainWpf
 
         private List<ulong> GenerateValidRandomNumbers(CHCLCGM<RusAlphabet> generator, int count)
         {
-            List<ulong> validNumbers = new List<ulong>();
+            List<ulong> validNumbers = [];
             while (validNumbers.Count < count)
             {
                 var randomText = generator.Next();
                 ulong numericValue = (ulong)modifier.TextToNumWithAlphabetBase(randomText);
 
-                var numericString = numericValue.ToString();
-
                 if (numericValue > 0 /*&& numericString.Length == 16*/&& numericValue <= ulong.MaxValue)
                 {
-                    validNumbers.Add((ulong)numericValue);
+                    validNumbers.Add(numericValue);
                 }
             }
             return validNumbers;
@@ -325,7 +324,7 @@ namespace MainWpf
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(fileName))
+                using (StreamWriter writer = new(fileName))
                 {
                     foreach (var number in numbers)
                     {
@@ -346,7 +345,7 @@ namespace MainWpf
 
             foreach (var seed in seeds)
             {
-                generator.Init(seed, coeffs);
+                generator.Init(seed);
                 var numbers = GenerateValidRandomNumbers(generator, 4000);
                 SaveNumbersToFile(numbers, $"{seed}_numbers.txt");
             }
@@ -362,7 +361,7 @@ namespace MainWpf
             List<int> bitDifferences = [];
 
             // Сохранение предыдущего зашифрованного выхода для сравнения
-            string previousEncrypted = Utils.SPNetEncode(initialInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
+            string previousEncrypted = combinedEncryptor.Encrypt(initialInput, KeyLab3, RoundsLab3);
 
             // Переводим входную строку в биты
             List<bool> bits = [];
@@ -386,7 +385,7 @@ namespace MainWpf
                 string modifiedInput = modifier.NumsToText(res);
 
                 // кря
-                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
+                string currentEncrypted = combinedEncryptor.Encrypt(modifiedInput, KeyLab3, RoundsLab3);
 
                 // Считаем количество измененных битов между текущим и предыдущим зашифрованным текстом
                 int changedBitsCount = CountChangedBits(previousEncrypted, currentEncrypted);
@@ -405,8 +404,8 @@ namespace MainWpf
 
         public ICommand AlnalyzeDiffusionCommand => new Command(obj =>
         {
-            CHCLCGM<RusAlphabet> localGenerator = new(encoder, modifier);
-            localGenerator.Init(InputBlockLab3, LCGCoeffs.DefaultCoeffs);
+            CHCLCGM<RusAlphabet> localGenerator = new(encoder, modifier, LCGCoeffs.DefaultCoeffs);
+            localGenerator.Init(InputBlockLab3);
 
             Random rand = new();
 
@@ -420,7 +419,7 @@ namespace MainWpf
                 string curVal = localGenerator.Next();
 
                 // Сохранение предыдущего зашифрованного выхода для сравнения
-                string previousEncrypted = Utils.SPNetEncode(curVal, KeyLab3, RoundsLab3, encoder, modifier, generator);
+                string previousEncrypted = combinedEncryptor.Encrypt(curVal, KeyLab3, RoundsLab3);
 
                 foreach (var item in modifier.TextToNums(curVal))
                     bits.AddRange(modifier.NumToBin(item));
@@ -435,7 +434,7 @@ namespace MainWpf
                 string modifiedInput = modifier.NumsToText(res);
 
                 // кря
-                string currentEncrypted = Utils.SPNetEncode(modifiedInput, KeyLab3, RoundsLab3, encoder, modifier, generator);
+                string currentEncrypted = combinedEncryptor.Encrypt(modifiedInput, KeyLab3, RoundsLab3);
 
                 // Считаем количество измененных битов между текущим и предыдущим зашифрованным текстом
                 CountChangedBitsForEach(previousEncrypted, currentEncrypted, ref counts);
