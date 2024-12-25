@@ -1,5 +1,4 @@
-﻿using Core;
-using Core.Alphabet;
+﻿using Core.Alphabet;
 using Core.CombinedEncryptor.SPNet;
 using Core.Encryptor.Trithemius;
 using Core.RandomGenerator.LCG;
@@ -43,16 +42,13 @@ namespace MainWpf
         // Переменные управления интерфейсом
         private Visibility genValueButtonVisibility; 
 
-        // расширенный энкодер
-        private readonly ExtSBlockModPolyTrithemiusEncryptor<RusAlphabet> encoder;
-
-        // модификатор алфавита
+        private readonly ExtSBlockModPolyTrithemiusEncryptor<RusAlphabet> encryptor;
         private readonly AlphabetModifier<RusAlphabet> modifier;
-
-        // генератор
         private readonly CHCLCGM<RusAlphabet> generator;
-
         private readonly SPNetCombinedEncryptor<RusAlphabet> combinedEncryptor;
+
+        private readonly MessagerClientVM<RusAlphabet> sender;
+        public MessagerClientVM<RusAlphabet> Sender => sender;
 
         public ViewModel()
         {
@@ -69,11 +65,12 @@ namespace MainWpf
             rounds = 0;
             var a = new RusAlphabet();
             modifier = new AlphabetModifier<RusAlphabet>(a);
-            encoder = new(a, modifier);
+            encryptor = new(a, modifier);
             genValueButtonVisibility = Visibility.Hidden;
-            generator = new(encoder, modifier, LCGCoeffs.DefaultCoeffs);
-            combinedEncryptor = new(encoder, modifier, generator);
+            generator = new(encryptor, modifier, LCGCoeffs.DefaultCoeffs);
+            combinedEncryptor = new(encryptor, modifier, generator);
 
+            sender = new(modifier, generator, combinedEncryptor);
         }
 
         public Visibility GenValueButtonVisibility
@@ -200,6 +197,7 @@ namespace MainWpf
                 OnPropertyChanged();
             }
         }
+
         public string OutputDecodeLab3
         {
             get => outputdecodelab3;
@@ -209,7 +207,6 @@ namespace MainWpf
                 OnPropertyChanged();
             }
         }
-
 
         public int RoundsLab3
         {
@@ -227,7 +224,7 @@ namespace MainWpf
             if (string.IsNullOrWhiteSpace(Key))
                 EncodeOutputText = "Неверный ключ";
             else
-                EncodeOutputText = encoder.Encrypt(EncodeInputText, Key, Shift);
+                EncodeOutputText = encryptor.Encrypt(EncodeInputText, Key, Shift);
         });
         public ICommand CopyEncodeOutputCommand => new Command(obj =>
         {
@@ -240,7 +237,7 @@ namespace MainWpf
             if (string.IsNullOrWhiteSpace(Key))
                 DecodeOutputText = "Неверный ключ";
             else
-                DecodeOutputText = encoder.Decrypt(DecodeInputText, Key, Shift);
+                DecodeOutputText = encryptor.Decrypt(DecodeInputText, Key, Shift);
         });
 
         public ICommand CopyDecodeOutputCommand => new Command(obj =>
@@ -274,7 +271,6 @@ namespace MainWpf
         public ICommand EncodeCommandLab3 => new Command(obj =>
         {
             OutputEncodeLab3 = combinedEncryptor.Encrypt(InputBlockLab3, KeyLab3, RoundsLab3);
-
 
         });
 
@@ -404,7 +400,7 @@ namespace MainWpf
 
         public ICommand AlnalyzeDiffusionCommand => new Command(obj =>
         {
-            CHCLCGM<RusAlphabet> localGenerator = new(encoder, modifier, LCGCoeffs.DefaultCoeffs);
+            CHCLCGM<RusAlphabet> localGenerator = new(encryptor, modifier, LCGCoeffs.DefaultCoeffs);
             localGenerator.Init(InputBlockLab3);
 
             Random rand = new();

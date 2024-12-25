@@ -76,21 +76,17 @@ namespace Core.EncryptionMessager.CCM
             packet.Mac = _alphabetModifier.Xor(packet.Mac, mac);
         }
 
-        public bool Init(string mType, string sender, string reciever, string session, string generatorKey)
+        public bool Init(string mType, string sender, string reciever, string session, string generatorKey, string nonce = "СЕМИХАТОВ_КВАНТЫ")
         {
-            //if (!_validMTypes.Contains(mType)) return false;
+            if (!_validMTypes.Contains(mType)) return false;
             _headerData[0] = mType;
-            //if (!ValidateAndPrepareInput(ref sender, 8)) return false;
             _headerData[1] = sender;
-            //if (!ValidateAndPrepareInput(ref reciever, 8)) return false;
             _headerData[2] = reciever;
-            //if (!ValidateAndPrepareInput(ref session, 9)) return false;
             _headerData[3] = session;
-            //if (!ValidateAndPrepareInput(ref generatorKey, 16)) return false;
             _generator.Init(generatorKey);
             for (int i = new Random().Next(50, 100); i > 0; i--)
                 _generator.Next();
-            string nonce = "СЕМИХАТОВ_КВАНТЫ"; //_generator.Next();
+            nonce = _generator.Next();
 
             string t = _alphabetModifier.SumString(_alphabetModifier.SumString(reciever + sender, mType + session + "_____"), nonce);
             _initialValue = t[0..8] + t[12..16] + t[12..16];
@@ -101,7 +97,7 @@ namespace Core.EncryptionMessager.CCM
 
         public bool Send(string message, out IEnumerable<bool> bits)
         {
-            if (_roundKeys is null)
+            if (_roundKeys.Length == 0)
             {
                 bits = [];
                 return false;
@@ -118,9 +114,10 @@ namespace Core.EncryptionMessager.CCM
         public bool Recieve(IEnumerable<bool> bits, out DataPacket<T>? packet)
         {
             packet = null;
-            if (_roundKeys is null) return false;
+            if (_roundKeys.Length == 0) return false;
 
             packet = packerFactory.FromBits(bits);
+            if (!packet.Validate()) return false;
             var currentMessageNumber = _alphabetModifier.TextToNumWithAlphabetBase(_alphabetModifier.Xor(packet.InitValue[8..12], packet.InitValue[12..16]));
             if (currentMessageNumber <= _lastRecieved) return false;
 

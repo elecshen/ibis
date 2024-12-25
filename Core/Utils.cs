@@ -29,9 +29,13 @@ namespace Core
 
         public static bool ValidateAndPrepareInput<T>(ref string input, int requiredLength, IAlphabetModifier<T> modifier) where T : IAlphabet
         {
+            input = input.ToUpper().Trim();
             if (input.Any(l => !modifier.Alphabet.Contains(l))) return false;
-            input = modifier.SumString(input, new string('_', requiredLength));
-            input = input[..requiredLength];
+            if (requiredLength != -1)
+            {
+                input = modifier.SumString(input, new string('_', requiredLength));
+                input = input[..requiredLength];
+            }
             return true;
         }
     }

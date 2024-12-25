@@ -6,10 +6,10 @@ namespace Core.EncryptionMessager
     {
         protected readonly IAlphabetModifier<T> _alphabetModifier = alphabetModifier;
 
-        public string[] HeaderData = headerData;
-        public string InitValue = initValue;
-        public string Message = message;
-        public string Mac = mac;
+        public string[] HeaderData { get; set; } = headerData;
+        public string InitValue { get; set; } = initValue;
+        public string Message { get; set; } = message;
+        public string Mac { get; set; } = mac;
 
         public IEnumerable<bool> ToBits()
         {
@@ -76,6 +76,18 @@ namespace Core.EncryptionMessager
             var bits = _alphabetModifier.TextToBin(Message);
             if (IsPadded(bits, out _, out int padLength))
                 Message = _alphabetModifier.BinToText(bits.SkipLast(padLength));
+        }
+
+        public bool Validate()
+        {
+            char type = HeaderData[0][0];
+            char subtype = HeaderData[0][1];
+            int macLen = Mac.Length;
+            if (type != 'В' ||
+                macLen != 16 && (subtype == 'А' || subtype == 'Б') ||
+                macLen != 0 && subtype == '_')
+                return false;
+            return true;
         }
     }
 }

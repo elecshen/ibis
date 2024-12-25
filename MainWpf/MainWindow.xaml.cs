@@ -1,8 +1,4 @@
-﻿using Core.Alphabet;
-using Core.ShiftCipher.Trithemius;
-using System.Windows;
-
-
+﻿using System.Windows;
 
 namespace MainWpf
 {
@@ -14,9 +10,6 @@ namespace MainWpf
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel();
         }
-
-       
     }
 }

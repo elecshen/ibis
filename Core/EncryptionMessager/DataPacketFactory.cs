@@ -32,7 +32,10 @@ namespace Core.EncryptionMessager
                 l += _alphabetModifier.Alphabet[str[27 + i]];
             }
             l /= 5;
-            return new([str[0..2], str[2..10], str[10..18], str[18..27], str[27..31]], str[31..47], str[47..(47 + l)], str[(47 + l)..], _alphabetModifier);
+            if (47+l < str.Length)
+                return new([str[0..2], str[2..10], str[10..18], str[18..27], str[27..31]], str[31..47], str[47..(47 + l)], str[(47 + l)..], _alphabetModifier);
+            else
+                return new([str[0..2], str[2..10], str[10..18], str[18..27], str[27..31]], str[31..47], str[47..], "", _alphabetModifier);
         }
     }
 }
